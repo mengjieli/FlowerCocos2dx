@@ -32,7 +32,10 @@ module flower {
 			else if(this.list[0].type == "id")
 			{
 				var name:string = this.list[0].val;
-				if(commonInfo.objects[name])
+				if(commonInfo.objects["this"][name]) {
+					atr = commonInfo.objects["this"][name];
+					this.before = commonInfo.objects["this"];
+				} else if(commonInfo.objects[name])
 				{
 					this.before = commonInfo.objects[name];
 					this.beforeClass = false;

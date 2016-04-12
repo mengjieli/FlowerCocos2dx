@@ -22,7 +22,16 @@ module flower {
             this.classes.local[name] = cls;
         }
 
-        public parse(content:any, data:any):any {
+        public parseUI(content:any, data:any):any {
+            var className = this.parse(content);
+            var UIClass = this.classes.local[className];
+            if (data) {
+                return new UIClass(data);
+            }
+            return new UIClass();
+        }
+
+        public parse(content:any):string {
             trace("解析UI:", content);
             this.parseContent = content;
             var xml:flower.XMLElement;
@@ -38,13 +47,12 @@ module flower {
                 }
                 return null;
             }
-            var className = this.decodeRootComponent(xml, data);
+            var className = this.decodeRootComponent(xml);
             this.parseContent = "";
-            var UIClass = this.classes.local[className];
-            return new UIClass();
+            return className;
         }
 
-        private decodeRootComponent(xml:flower.XMLElement, data:any = null):string {
+        private decodeRootComponent(xml:flower.XMLElement):string {
             var content = "";
             var hasLocalNS:boolean = xml.getNameSapce("local") ? true : false;
             var uiname:string = xml.name;
@@ -88,7 +96,7 @@ module flower {
             var propertyList = [];
             this.decodeObject(before + "\t", className, "$initMain", false, xml, hasLocalNS, propertyList, {});
             content += before + "\t}\n\n";
-            for(var i = propertyList.length - 1; i >= 0; i--) {
+            for (var i = propertyList.length - 1; i >= 0; i--) {
                 content += propertyList[i];
             }
             content += before + "\treturn " + className + ";\n";
@@ -108,34 +116,31 @@ module flower {
             }
             content += classEnd;
             content += "\n\nUIParser.registerUIClass(\"" + allClassName + "\", " + allClassName + ");\n";
-            if(Engine.DEBUG) {
+            if (Engine.DEBUG) {
                 try {
                     eval(content);
-                } catch(e) {
+                } catch (e) {
                     flower.DebugInfo.debug("解析 UI 出错,:\n" + e + "\n" + this.parseContent, flower.DebugInfo.ERROR);
                 }
             } else {
                 eval(content);
             }
-            //if (classAtr) {
-            //    this.addLocalUIClass(className, System.global[className]);
-            //}
             trace("解析类:\n", content);
             return allClassName;
         }
 
-        private decodeObject(before:string, className:string, funcName:string, createClass:boolean, xml:flower.XMLElement, hasLocalNS:boolean, propertyFunc:Array<string>,nameIndex:any):void {
+        private decodeObject(before:string, className:string, funcName:string, createClass:boolean, xml:flower.XMLElement, hasLocalNS:boolean, propertyFunc:Array<string>, nameIndex:any):void {
             //var content = "";
             var setObject = before + className + ".prototype." + funcName + " = function(parentObject) {\n";
             var thisObj = "parentObject";
-            if(createClass) {
+            if (createClass) {
                 var createClassNameSpace = xml.name.split(":")[0];
                 var createClassName = xml.name.split(":")[1];
-                if(createClassNameSpace != "local") {
+                if (createClassNameSpace != "local") {
                     createClassName = this.classes[createClassNameSpace][createClassName];
                     //createClassName = createClassName.toLocaleLowerCase();//createClassName.charAt(0).toLowerCase() + createClassName.slice(1,createClassName.length);
                 }
-                thisObj = createClassName.split(".")[createClassName.split(".").length-1];
+                thisObj = createClassName.split(".")[createClassName.split(".").length - 1];
                 thisObj = thisObj.toLocaleLowerCase();
                 setObject += before + "\tvar " + thisObj + " = new " + createClassName + "();\n";
             }
@@ -194,7 +199,7 @@ module flower {
                         item = item.list[0];
                     }
                     itemClassName = item.name.split(":")[1];
-                    if(!nameIndex[itemClassName]) {
+                    if (!nameIndex[itemClassName]) {
                         nameIndex[itemClassName] = 1;
                     } else {
                         nameIndex[itemClassName]++;
@@ -203,21 +208,21 @@ module flower {
                     if (childClass == null) {
                         funcName = "$get" + itemClassName;
                         setObject += before + "\t" + thisObj + "." + childName + " = this." + funcName + "(" + thisObj + ");\n";
-                        this.decodeObject(before,className,funcName, true,item,hasLocalNS,propertyFunc,nameIndex);
+                        this.decodeObject(before, className, funcName, true, item, hasLocalNS, propertyFunc, nameIndex);
                     } else {
                         var idAtr:XMLAttribute = item.getAttribute("id");
                         funcName = "$get" + itemClassName;
-                        if(idAtr) {
+                        if (idAtr) {
                             setObject += before + "\t" + thisObj + "." + idAtr.value + " = this." + funcName + "(" + thisObj + ");\n";
                             setObject += before + "\t" + thisObj + ".addChild(" + thisObj + "." + idAtr.value + ");\n";
                         } else {
                             setObject += before + "\t" + thisObj + ".addChild(this." + funcName + "(" + thisObj + "));\n";
                         }
-                        this.decodeObject(before,className,funcName, true,item,hasLocalNS,propertyFunc,nameIndex);
+                        this.decodeObject(before, className, funcName, true, item, hasLocalNS, propertyFunc, nameIndex);
                     }
                 }
             }
-            if(createClass) {
+            if (createClass) {
                 setObject += before + "\treturn " + thisObj + ";\n";
             }
             setObject += before + "}\n\n";
@@ -226,20 +231,26 @@ module flower {
 
         public static ist:flower.UIParser;
 
-        public static parse(content:any, data:any = null):any {
+        public static parse(content:any):string {
             if (!flower.UIParser.ist) {
                 flower.UIParser.ist = new flower.UIParser();
             }
-            return flower.UIParser.ist.parse(content, data);
+            return flower.UIParser.ist.parse(content);
         }
 
-        public static registerUIClass(name:string,cls:any) {
+        public static parseUI(content:any, data:any = null):any {
             if (!flower.UIParser.ist) {
                 flower.UIParser.ist = new flower.UIParser();
             }
-            flower.UIParser.ist.addLocalUIClass(name,cls);
+            return flower.UIParser.ist.parseUI(content, data);
         }
 
+        public static registerUIClass(name:string, cls:any) {
+            if (!flower.UIParser.ist) {
+                flower.UIParser.ist = new flower.UIParser();
+            }
+            flower.UIParser.ist.addLocalUIClass(name, cls);
+        }
     }
 }
 

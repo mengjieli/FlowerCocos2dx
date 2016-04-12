@@ -5,6 +5,7 @@ module flower {
 		public constructor()
 		{
 			super();
+			this.absoluteState = true;
 			this.currentState = "up";
 			this.addListener(flower.TouchEvent.TOUCH_BEGIN,this._onTouch,this);
 			this.addListener(flower.TouchEvent.TOUCH_END,this._onTouch,this);

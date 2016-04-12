@@ -112,6 +112,15 @@ module flower {
 			}
 		}
 
+		private _absoluteState:Boolean = false;
+		public get absoluteState():Boolean {
+			return this._absoluteState;
+		}
+
+		public set absoluteState(val:Boolean) {
+			this._absoluteState = !!val;
+		}
+
 		public $state:flower.StringValue = new flower.StringValue();
 		public get currentState():string
 		{
