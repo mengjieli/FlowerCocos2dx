@@ -1,0 +1,91 @@
+module flower {
+	export class Button extends flower.Group {
+		private _enabled:boolean = true;
+
+		public constructor()
+		{
+			super();
+			this.currentState = "up";
+			this.addListener(flower.TouchEvent.TOUCH_BEGIN,this._onTouch,this);
+			this.addListener(flower.TouchEvent.TOUCH_END,this._onTouch,this);
+			this.addListener(flower.TouchEvent.TOUCH_RELEASE,this._onTouch,this);
+		}
+
+		public _getMouseTarget(matrix:flower.Matrix,mutiply:boolean):flower.DisplayObject
+		{
+			var target:flower.DisplayObject = super._getMouseTarget(matrix,mutiply);
+			if(target)
+			{
+				target = this;
+			}
+			return target;
+		}
+
+		private _onTouch(e:flower.TouchEvent)
+		{
+			if(!this._enabled)
+			{
+				return ;
+			}
+			switch(e.type)
+			{
+				case flower.TouchEvent.TOUCH_BEGIN :
+					this.currentState = "down";
+					break;
+				case flower.TouchEvent.TOUCH_END :
+				case flower.TouchEvent.TOUCH_RELEASE :
+					this.currentState = "up";
+					break;
+			}
+		}
+
+		public set enabled(val:boolean)
+		{
+			if(this._enabled == val)
+			{
+				return ;
+			}
+			this._enabled = val;
+			if(this._enabled)
+			{
+				this.currentState = "up";
+			}
+			else
+			{
+				this.currentState = "disabled";
+			}
+		}
+
+		public get enabled():boolean
+		{
+			return this._enabled;
+		}
+
+		public addUIEvents()
+		{
+			super.addUIEvents();
+			this.addListener(flower.TouchEvent.TOUCH_END,this.onEXEClick,this);
+		}
+
+		private onClickEXE:Function;
+		public set onClick(val:Function)
+		{
+			this.onClickEXE = val;
+		}
+
+		public get onClick():Function
+		{
+			return this.onClickEXE;
+		}
+
+		private onEXEClick(e:flower.TouchEvent)
+		{
+			if(this.onClickEXE && e.target == this)
+			{
+				this.onClickEXE.call(this);
+			}
+		}
+
+	}
+}
+
