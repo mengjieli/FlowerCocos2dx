@@ -208,7 +208,7 @@ class System {
         System.lastTime = now;
         if (System.loadingList.length) {
             var item = System.loadingList.shift();
-            item[0](item[1],item[2],item[3],item[4]);
+            item[0](item[1], item[2], item[3], item[4]);
         }
     }
 

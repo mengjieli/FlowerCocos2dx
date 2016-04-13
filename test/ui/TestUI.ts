@@ -4,8 +4,9 @@ module test {
 		public constructor()
 		{
 			super();
-			flower.Engine.getInstance().addChild(this);
-			this.addChild(new test.TestLayout());
+			flower.Engine.getInstance().addChild(new test.TestUpdateUI());
+			//this.addChild(new test.TestUpdateUI());
+			//this.addChild(new test.TestLayout());
 			return ;
 			var button:flower.Button = new flower.Button();
 			button.onAdded = function ()

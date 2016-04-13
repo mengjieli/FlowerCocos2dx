@@ -38,6 +38,7 @@ module flower {
 			var i:number;
 			var f:number;
 			var backList:Array<any>;
+			//trace("[receive] cmd = ",cmd," data = ",bytes.toString());
 			if(cmd == 0)
 			{
 				var backCmd:number = bytes.readUInt();

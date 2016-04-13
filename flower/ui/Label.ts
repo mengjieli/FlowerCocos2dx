@@ -24,7 +24,7 @@ module flower {
 			super.dispose();
 		}
 
-		private _eventThis:any;
+		private _eventThis:any = this;
 
 		public addUIEvents() {
 			this.addListener(flower.Event.ADDED, this.onEXEAdded, this);
