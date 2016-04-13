@@ -16,10 +16,19 @@ module flower {
                 "VerticalLayout": "flower.VerticalLayout"
             };
             this.classes.local = {};
+            this.classes.localContent = {};
+        }
+
+        public getLocalUIClass(name:string):any {
+            return this.classes.local[name];
         }
 
         public addLocalUIClass(name:string, cls:any) {
             this.classes.local[name] = cls;
+        }
+
+        public setLocalUIClassContent(name:string, content:string) {
+            this.classes.localContent[name] = content;
         }
 
         public parseUI(content:any, data:any):any {
@@ -32,7 +41,7 @@ module flower {
         }
 
         public parse(content:any):string {
-            trace("解析UI:", content);
+            //trace("解析UI:", content);
             this.parseContent = content;
             var xml:flower.XMLElement;
             if (typeof(content) == "string") {
@@ -47,12 +56,12 @@ module flower {
                 }
                 return null;
             }
-            var className = this.decodeRootComponent(xml);
+            var className = this.decodeRootComponent(xml, content);
             this.parseContent = "";
             return className;
         }
 
-        private decodeRootComponent(xml:flower.XMLElement):string {
+        private decodeRootComponent(xml:flower.XMLElement, classContent:string):string {
             var content = "";
             var hasLocalNS:boolean = xml.getNameSapce("local") ? true : false;
             var uiname:string = xml.name;
@@ -82,6 +91,16 @@ module flower {
                 className = "$UI" + this.id++;
                 allClassName = className;
             }
+            var changeAllClassName = allClassName;
+            if (this.classes.local[allClassName]) {
+                if (this.classes.localContent[allClassName] == classContent) {
+                    return allClassName;
+                } else {
+                    changeAllClassName = changeAllClassName.slice(0, changeAllClassName.length - className.length);
+                    className = "$UI" + this.id++;
+                    changeAllClassName += className;
+                }
+            }
             var before = "";
             for (var i = 0; i < packages.length; i++) {
                 content += before + "var " + packages[i] + ";\n";
@@ -90,32 +109,35 @@ module flower {
             }
             content += before + "var " + className + " = (function (_super) {\n";
             content += before + "\t__extends(" + className + ", _super);\n";
-            content += before + "\tfunction " + className + "() {\n";
+            content += before + "\tfunction " + className + "(data) {\n";
+            content += before + "\t\tif(data) this.data = data;\n";
             content += before + "\t\t _super.call(this);\n";
             content += before + "\t\tthis.$initMain(this);\n";
             var propertyList = [];
             this.decodeObject(before + "\t", className, "$initMain", false, xml, hasLocalNS, propertyList, {});
             content += before + "\t}\n\n";
-            for (var i = propertyList.length - 1; i >= 0; i--) {
+            content += propertyList[propertyList.length - 1];
+            for (var i = 0; i < propertyList.length - 1; i++) {
                 content += propertyList[i];
             }
             content += before + "\treturn " + className + ";\n";
-            content += before + "})(" + extendClass + ");\t";
+            content += before + "})(" + extendClass + ");\n";
             before = "";
             var classEnd = "";
             for (var i = 0; i < packages.length; i++) {
                 if (i == 0) {
                     classEnd = before + "})(" + packages[i] + " || (" + packages[i] + " = {}));\n" + classEnd;
-                } else if (i < packages.length - 1) {
-                    classEnd = before + "})(" + packages[i] + " = " + packages[i - 1] + "." + packages[i] + " || (" + packages[i - 1] + "." + packages[i] + " = {}));\n" + classEnd;
+
                 } else {
                     classEnd = before + "})(" + packages[i] + " = " + packages[i - 1] + "." + packages[i] + " || (" + packages[i - 1] + "." + packages[i] + " = {}));\n" + classEnd;
-                    classEnd = before + packages[i - 1] + "." + packages[i] + " = " + packages[i] + ";\n" + classEnd;
                 }
                 before += "\t";
+                if (i == packages.length - 1) {
+                    classEnd = before + packages[i] + "." + className + " = " + className + ";\n" + classEnd;
+                }
             }
             content += classEnd;
-            content += "\n\nUIParser.registerUIClass(\"" + allClassName + "\", " + allClassName + ");\n";
+            content += "\n\nUIParser.registerUIClass(\"" + allClassName + "\", " + changeAllClassName + ");\n";
             if (Engine.DEBUG) {
                 try {
                     eval(content);
@@ -125,12 +147,12 @@ module flower {
             } else {
                 eval(content);
             }
+            this.setLocalUIClassContent(allClassName, classContent);
             trace("解析类:\n", content);
             return allClassName;
         }
 
         private decodeObject(before:string, className:string, funcName:string, createClass:boolean, xml:flower.XMLElement, hasLocalNS:boolean, propertyFunc:Array<string>, nameIndex:any):void {
-            //var content = "";
             var setObject = before + className + ".prototype." + funcName + " = function(parentObject) {\n";
             var thisObj = "parentObject";
             if (createClass) {
@@ -142,7 +164,12 @@ module flower {
                 }
                 thisObj = createClassName.split(".")[createClassName.split(".").length - 1];
                 thisObj = thisObj.toLocaleLowerCase();
-                setObject += before + "\tvar " + thisObj + " = new " + createClassName + "();\n";
+                if(createClassNameSpace == "local") {
+                    setObject += before + "\tvar " + thisObj + " = new (flower.UIParser.getLocalUIClass(\"" + createClassName + "\"))();\n";
+                } else {
+                    setObject += before + "\tvar " + thisObj + " = new " + createClassName + "();\n";
+                }
+                setObject += before + "\t" + thisObj + ".eventThis = this;\n";
             }
             for (var i:number = 0; i < xml.attributes.length; i++) {
                 var atrName:string = xml.attributes[i].name;
@@ -161,7 +188,7 @@ module flower {
                         setObject += before + "\t" + thisObj + ".bindProperty(\"" + atrName + "\", \"" + atrValue + "\", [this]);\n";
                     }
                     else {
-                        setObject += before + "\t" + thisObj + "." + atrName + " = " + atrValue + ";\n";
+                        setObject += before + "\t" + thisObj + "." + atrName + " = " + (this.isNumberOrBoolean(atrValue) ? atrValue : "\"" + atrValue + "\"") + ";\n";
                     }
                 }
             }
@@ -213,8 +240,8 @@ module flower {
                         var idAtr:XMLAttribute = item.getAttribute("id");
                         funcName = "$get" + itemClassName;
                         if (idAtr) {
-                            setObject += before + "\t" + thisObj + "." + idAtr.value + " = this." + funcName + "(" + thisObj + ");\n";
-                            setObject += before + "\t" + thisObj + ".addChild(" + thisObj + "." + idAtr.value + ");\n";
+                            setObject += before + "\t" + "this" + "." + idAtr.value + " = this." + funcName + "(" + thisObj + ");\n";
+                            setObject += before + "\t" + thisObj + ".addChild(" + "this" + "." + idAtr.value + ");\n";
                         } else {
                             setObject += before + "\t" + thisObj + ".addChild(this." + funcName + "(" + thisObj + "));\n";
                         }
@@ -227,6 +254,33 @@ module flower {
             }
             setObject += before + "}\n\n";
             propertyFunc.push(setObject);
+        }
+
+        private isNumberOrBoolean(str:string):boolean {
+            if (str == "true" || str == "false") {
+                return true;
+            }
+            if (str.length > 3 && ( str.slice(0, 2) == "0x" || str.slice(0, 2) == "0X")) {
+                for (var i = 2; i < str.length; i++) {
+                    var code = str.charCodeAt(i);
+                    if (code >= 48 && code <= 57 || code >= 65 && code <= 70 || code >= 97 && code <= 102) {
+                    }
+                    else {
+                        return false;
+                    }
+                }
+            }
+            else {
+                for (var i = 0; i < str.length; i++) {
+                    var code = str.charCodeAt(i);
+                    if (code >= 48 && code <= 57) {
+                    }
+                    else {
+                        return false;
+                    }
+                }
+            }
+            return true;
         }
 
         public static ist:flower.UIParser;
@@ -243,6 +297,13 @@ module flower {
                 flower.UIParser.ist = new flower.UIParser();
             }
             return flower.UIParser.ist.parseUI(content, data);
+        }
+
+        public static getLocalUIClass(name:string):any {
+            if (!flower.UIParser.ist) {
+                flower.UIParser.ist = new flower.UIParser();
+            }
+            return flower.UIParser.ist.getLocalUIClass(name);
         }
 
         public static registerUIClass(name:string, cls:any) {

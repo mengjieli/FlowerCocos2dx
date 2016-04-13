@@ -5,6 +5,7 @@ module flower {
 		private stmts:Array<any> = [];
 		private thisObj:any;
 		private property:string;
+		private content:string;
 
 		public constructor(thisObj:any,checks:Array<any>,property:string,content:string)
 		{
@@ -22,6 +23,7 @@ module flower {
 			}
 			checks.push(thisObj);
 			var lastEnd:number = 0;
+			var parseError = false;
 			for(i = 0; i < content.length; i++)
 			{
 				if(content.charAt(i) == "{")
@@ -44,12 +46,20 @@ module flower {
 								lastEnd = j + 1;
 							}
 							var stmt:flower.Stmts = flower.Compiler.parserExpr(content.slice(i + 1,j),checks,{"this":thisObj},{"Tween":flower.Tween,"Ease":flower.Ease},this.list);
+							if(stmt == null) {
+								parseError = true;
+								break;
+							}
 							this.stmts.push(stmt);
 							i = j;
 							break;
 						}
 					}
 				}
+			}
+			if(parseError) {
+				thisObj[property] = content;
+				return ;
 			}
 			if(lastEnd < content.length)
 			{

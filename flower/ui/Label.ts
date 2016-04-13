@@ -24,26 +24,38 @@ module flower {
 			super.dispose();
 		}
 
-		public addUIEvents()
-		{
-			this.addListener(flower.Event.ADDED,this.onEXEAdded,this);
+		private _eventThis:any;
+
+		public addUIEvents() {
+			this.addListener(flower.Event.ADDED, this.onEXEAdded, this);
+		}
+
+		public set eventThis(val:any) {
+			this._eventThis = val||this;
+		}
+
+		public get eventThis():any {
+			return this._eventThis;
 		}
 
 		private onAddedEXE:Function;
-		public set onAdded(val:Function)
-		{
+
+		public set onAdded(val:any) {
+			if(typeof val == "string") {
+				var content:string = <any>val;
+				val = function(){
+					eval(content);
+				}.bind(this.eventThis);
+			}
 			this.onAddedEXE = val;
 		}
 
-		public get onAdded():Function
-		{
+		public get onAdded():any {
 			return this.onAddedEXE;
 		}
 
-		private onEXEAdded(e:flower.Event)
-		{
-			if(this.onAddedEXE && e.target == this)
-			{
+		private onEXEAdded(e:flower.Event) {
+			if (this.onAddedEXE && e.target == this) {
 				this.onAddedEXE.call(this);
 			}
 		}
@@ -77,6 +89,10 @@ module flower {
 		}
 
 		public $state:flower.StringValue = new flower.StringValue();
+		public get state():flower.StringValue {
+			return this.$state;
+		}
+
 		public get currentState():string
 		{
 			return this.$state.value;

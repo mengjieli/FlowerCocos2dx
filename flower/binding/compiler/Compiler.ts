@@ -16,6 +16,9 @@ module flower {
 			this._scanner.setCommonInfo(common);
 			this._parser.setCommonInfo(common);
 			this._parser.parser(content);
+			if(common.parserError) {
+				return null;
+			}
 			common.result = result;
 			common.expr = common.newNode.expval;
 			common.expr.checkPropertyBinding(common);

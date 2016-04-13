@@ -3,7 +3,7 @@ module test {
 
         public constructor() {
             super();
-            var loadList:flower.URLLoaderList = new flower.URLLoaderList(["res/uxml/Layout.xml"]);
+            var loadList:flower.URLLoaderList = new flower.URLLoaderList(["res/uxml/Layout.xml","res/uxml/Button.xml","res/uxml/Button2.xml"]);
             loadList.addListener(flower.Event.COMPLETE, this.onLoadComplete, this);
             loadList.load();
         }
@@ -31,7 +31,10 @@ module test {
                 return a * b;
             }
 
-            var panel:flower.Group = flower.UIParser.parseUI(e.data[0]);
+            flower.UIParser.parse(e.data[1]);
+
+
+            var panel:flower.Group = flower.UIParser.parseUI(e.data[0],flower.DataManager.ist.main);
             this.addChild(panel);
             panel.currentState = "select";
             panel.addListener(flower.TouchEvent.TOUCH_END, function (e:flower.TouchEvent) {
@@ -41,7 +44,9 @@ module test {
             trace("txt=",panel.txt1.text);
 
 
-            var panel2:flower.Group = flower.UIParser.parseUI(e.data[0]);
+            flower.UIParser.parse(e.data[2]);
+
+            var panel2:flower.Group = flower.UIParser.parseUI(e.data[0],flower.DataManager.ist.main);
             panel2.x = 400;
             panel2.y = 400;
             panel2.currentState = "select";
