@@ -11,6 +11,7 @@ module flower {
                 "Image": "flower.Image",
                 "Group": "flower.Group",
                 "Button": "flower.Button",
+                "RectUI": "flower.RectUI",
                 "LinearLayoutBase": "flower.LinearLayoutBase",
                 "HorizontalLayout": "flower.HorizontalLayout",
                 "VerticalLayout": "flower.VerticalLayout"

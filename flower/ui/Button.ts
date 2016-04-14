@@ -51,7 +51,7 @@ module flower {
             return this._enabled;
         }
 
-        public addUIEvents() {
+        protected addUIEvents() {
             super.addUIEvents();
             this.addListener(flower.TouchEvent.TOUCH_END, this.onEXEClick, this);
         }
