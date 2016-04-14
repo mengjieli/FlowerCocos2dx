@@ -4,7 +4,8 @@ module test {
 		public constructor()
 		{
 			new test.DebugServer();
-			new test.TestUI();
+			//new test.TestUI();
+			new test.TestShape();
 		}
 
 	}

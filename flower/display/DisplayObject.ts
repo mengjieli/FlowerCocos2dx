@@ -170,6 +170,9 @@ module flower {
 
 		public _setAlpha(val:number)
 		{
+			if(this._alpha == val) {
+				return;
+			}
 			this._alpha = val;
 			this._alphaChange();
 		}
@@ -189,6 +192,9 @@ module flower {
 
 		public _setParentAlpha(val:number)
 		{
+			if(this._parentAlpha == val) {
+				return;
+			}
 			this._parentAlpha = val;
 			this._alphaChange();
 		}
@@ -203,10 +209,10 @@ module flower {
 			this._height = val;
 		}
 
-		public $isMouseTarget(matrix:flower.Matrix,mutiply:boolean):boolean
+		public _getMouseTarget(matrix:flower.Matrix,mutiply:boolean):flower.DisplayObject
 		{
 			if(this.touchEnabled == false || this._visible == false)
-				return false;
+				return null;
 			matrix.save();
 			matrix.translate(-this._x,-this._y);
 			if(this.rotation)
@@ -217,10 +223,10 @@ module flower {
 			this._touchY = matrix.ty;
 			if(this._touchX >= 0 && this._touchY >= 0 && this._touchX < this._width && this._touchY < this._height)
 			{
-				return true;
+				return this;
 			}
 			matrix.restore();
-			return false;
+			return null;
 		}
 
 		public $getSize()

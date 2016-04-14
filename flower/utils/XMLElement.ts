@@ -3,6 +3,7 @@ module flower {
 		public namesapces:Array<flower.XMLNameSpace>;
 		public attributes:Array<flower.XMLAttribute>;
 		public list:Array<flower.XMLElement>;
+		public value:string;
 
 		public constructor()
 		{
@@ -48,6 +49,16 @@ module flower {
 			return null;
 		}
 
+		public getElements(atrName:string):Array<flower.XMLElement> {
+			var res:Array<flower.XMLElement> = [];
+			for(var i = 0; i < this.list.length; i++) {
+				if(this.list[i].name == atrName) {
+					res.push(this.list[i]);
+				}
+			}
+			return res;
+		}
+
 		public parse(content:string)
 		{
 			var delStart:number = -1;
@@ -70,6 +81,9 @@ module flower {
 				}
 			}
 			this.readInfo(content);
+			if(this.value == "") {
+				this.value = null;
+			}
 		}
 
 		private readInfo(content:string,startIndex:number = 0):number

@@ -112,6 +112,10 @@ module flower {
             content += before + "\tfunction " + className + "(data) {\n";
             content += before + "\t\tif(data) this.data = data;\n";
             content += before + "\t\t _super.call(this);\n";
+            var scriptInfo = {
+                content: ""
+            };
+            content += this.decodeScripts(before, className, xml.getElements("f:script"), scriptInfo);
             content += before + "\t\tthis.$initMain(this);\n";
             var propertyList = [];
             this.decodeObject(before + "\t", className, "$initMain", false, xml, hasLocalNS, propertyList, {});
@@ -120,6 +124,7 @@ module flower {
             for (var i = 0; i < propertyList.length - 1; i++) {
                 content += propertyList[i];
             }
+            content += scriptInfo.content;
             content += before + "\treturn " + className + ";\n";
             content += before + "})(" + extendClass + ");\n";
             before = "";
@@ -138,6 +143,7 @@ module flower {
             }
             content += classEnd;
             content += "\n\nUIParser.registerUIClass(\"" + allClassName + "\", " + changeAllClassName + ");\n";
+            //trace("解析后内容:\n", content);
             if (Engine.DEBUG) {
                 try {
                     eval(content);
@@ -152,6 +158,31 @@ module flower {
             return allClassName;
         }
 
+        private decodeScripts(before:string, className:string, scripts:Array<flower.XMLElement>, script):string {
+            var content = "";
+            for (var i = 0; i < scripts.length; i++) {
+                for (var s = 0; s < scripts[i].list.length; s++) {
+                    var item = scripts[i].list[s];
+                    var childName:string = item.name;
+                    childName = childName.split(":")[1];
+                    if (item.value == null || item.value == "") {
+                        var initValue = item.getAttribute("init");
+                        content += before + "\t\tthis." + childName + " = " + (initValue == null ? "null" : initValue.value) + ";\n";
+                    } else {
+                        script.content += before + "\t" + className + ".prototype." + childName + " = function(";
+                        var params = item.getAttribute("params");
+                        if (params) {
+                            script.content += params.value;
+                        }
+                        script.content += ") {\n";
+                        script.content += "\t\t" + item.value;
+                        script.content += "\t}\n\n";
+                    }
+                }
+            }
+            return content;
+        }
+
         private decodeObject(before:string, className:string, funcName:string, createClass:boolean, xml:flower.XMLElement, hasLocalNS:boolean, propertyFunc:Array<string>, nameIndex:any):void {
             var setObject = before + className + ".prototype." + funcName + " = function(parentObject) {\n";
             var thisObj = "parentObject";
@@ -160,11 +191,10 @@ module flower {
                 var createClassName = xml.name.split(":")[1];
                 if (createClassNameSpace != "local") {
                     createClassName = this.classes[createClassNameSpace][createClassName];
-                    //createClassName = createClassName.toLocaleLowerCase();//createClassName.charAt(0).toLowerCase() + createClassName.slice(1,createClassName.length);
                 }
                 thisObj = createClassName.split(".")[createClassName.split(".").length - 1];
                 thisObj = thisObj.toLocaleLowerCase();
-                if(createClassNameSpace == "local") {
+                if (createClassNameSpace == "local") {
                     setObject += before + "\tvar " + thisObj + " = new (flower.UIParser.getLocalUIClass(\"" + createClassName + "\"))();\n";
                 } else {
                     setObject += before + "\tvar " + thisObj + " = new " + createClassName + "();\n";
@@ -186,8 +216,7 @@ module flower {
                 else if (atrArray.length == 1) {
                     if (atrValue.indexOf("{") >= 0 && atrValue.indexOf("}") >= 0) {
                         setObject += before + "\t" + thisObj + ".bindProperty(\"" + atrName + "\", \"" + atrValue + "\", [this]);\n";
-                    }
-                    else {
+                    } else {
                         setObject += before + "\t" + thisObj + "." + atrName + " = " + (this.isNumberOrBoolean(atrValue) ? atrValue : "\"" + atrValue + "\"") + ";\n";
                     }
                 }
@@ -200,7 +229,12 @@ module flower {
                     var childNameNS:string = childName.split(":")[0];
                     childName = childName.split(":")[1];
                     var childClass = null;
-                    if (childNameNS == "local") {
+                    if (childNameNS == "f" && childName == "script") {
+                        continue;
+                    } else if (item.value != null && item.value != "") { //属性
+                        setObject += before + "\t" + thisObj + "." + childName + " = \"" + flower.StringDo.changeStringToInner(item.value) + "\";\n";
+                        continue;
+                    } else if (childNameNS == "local") {
                         if (!hasLocalNS) {
                             if (flower.Engine.DEBUG) {
                                 flower.DebugInfo.debug("解析 UI 出错:无法解析的命名空间 " + childNameNS + " :\n" + this.parseContent, flower.DebugInfo.ERROR);

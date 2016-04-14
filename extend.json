@@ -140,15 +140,15 @@
     ""
   ],
   [
-    "flower.display.Mask",
-    ""
-  ],
-  [
     "flower.display.Shape",
     "flower.display.DisplayObject"
   ],
   [
     "flower.display.Sprite",
+    "flower.display.DisplayObject"
+  ],
+  [
+    "flower.display.Mask",
     "flower.display.DisplayObject"
   ],
   [
@@ -164,8 +164,12 @@
     ""
   ],
   [
-    "flower.events.EventDispatcher",
+    "flower.display.supportClasses/Container",
     ""
+  ],
+  [
+    "flower.events.EventDispatcher",
+    "flower.display.supportClasses/Container"
   ],
   [
     "flower.events.IOErrorEvent",
@@ -332,6 +336,10 @@
     ""
   ],
   [
+    "flower.utils.StringDo",
+    ""
+  ],
+  [
     "flower.utils.VByteArray",
     ""
   ],
@@ -350,6 +358,10 @@
   [
     "test.TestBinding",
     "flower.display.Sprite"
+  ],
+  [
+    "test.TestShape",
+    "flower.ui.Group"
   ],
   [
     "test.TestCase",

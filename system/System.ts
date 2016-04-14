@@ -292,13 +292,25 @@ class System {
             txt.retain();
             return txt;
         }
+        if (className == "Shape") {
+            var shape = new cc.DrawNode();
+            shape.retain();
+            return shape;
+        }
+        if (className == "Mask") {
+            var mask = new cc.ClippingNode();
+            mask.retain();
+            return mask;
+        }
         return null;
     }
 
     private static nativeShows = {
         "DisplayObjectContainer": [],
         "Bitmap": [],
-        "TextField": []
+        "TextField": [],
+        "Shape": [],
+        "Mask": []
     };
 
     public static cycleNativeShow(className, show:any):void {
@@ -321,6 +333,37 @@ class System {
 
     public static Bitmap:any = {
         "texture": {"func": "initWithTexture"}
+    }
+
+    public static Shape:any = {
+        "clear": function (shape:any):void {
+            shape.clear();
+        },
+        "draw": function (shape:any, points:Array<any>, fillColor:number, fillAlpha:number, lineWidth:number, lineColor:number, lineAlpha:number):void {
+            for (var i = 0; i < points.length; i++) {
+                points[i].y = -points[i].y;
+            }
+            shape.drawPoly(points, {
+                r: fillColor >> 16,
+                g: fillColor >> 8 & 0xFF,
+                b: fillColor & 0xFF,
+                a: fillAlpha * 255
+            }, lineWidth, {
+                r: lineColor >> 16,
+                g: lineColor >> 8 & 0xFF,
+                b: lineColor & 0xFF,
+                a: lineAlpha * 255
+            });
+            for (var i = 0; i < points.length; i++) {
+                points[i].y = -points[i].y;
+            }
+        }
+    }
+
+    public static Mask:any = {
+        "init": function (show, mask) {
+            show.setStencil(mask);
+        }
     }
 
     private static $mesureTxt = new cc.LabelTTF("", "Times Roman", 12);
@@ -378,5 +421,7 @@ class System {
             return txt.getContentSize();
         }
     }
+
+
 }
 
