@@ -100,7 +100,7 @@ module flower {
 			{
 				this._show[p.atr] = this._x;
 			}
-			this.$addFlag(10);
+			this.$addFlag(0x200);
 			this.$propagateFlagsUp(4);
 		}
 
@@ -116,7 +116,7 @@ module flower {
 			{
 				this._show[p.atr] = this._y;
 			}
-			this.$addFlag(10);
+			this.$addFlag(0x200);
 			this.$propagateFlagsUp(4);
 		}
 
@@ -132,7 +132,7 @@ module flower {
 			{
 				this._show[p.atr] = this._DisplayObject[0];
 			}
-			this.$addFlag(10);
+			this.$addFlag(0x200);
 			this.$propagateFlagsUp(4);
 		}
 
@@ -148,7 +148,7 @@ module flower {
 			{
 				this._show[p.atr] = this._DisplayObject[1];
 			}
-			this.$addFlag(10);
+			this.$addFlag(0x200);
 			this.$propagateFlagsUp(4);
 		}
 
@@ -164,7 +164,7 @@ module flower {
 			{
 				this._show[p.atr] = this._DisplayObject[4] * p.scale;
 			}
-			this.$addFlag(10);
+			this.$addFlag(0x200);
 			this.$propagateFlagsUp(4);
 		}
 

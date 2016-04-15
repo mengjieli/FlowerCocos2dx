@@ -1,40 +1,15 @@
 module flower {
-    export class Group extends flower.Sprite {
+    export class Group extends flower.Sprite implements flower.UIComponent {
 
         public constructor() {
             super();
             flower.Component.init(this);
         }
 
-        private _layout:flower.Layout;
-        public get layout():flower.Layout {
-            return this._layout;
-        }
-
-        public set layout(val:flower.Layout) {
-            if (this._layout) {
-                this._layout.$clear();
-            }
-            this._layout = val;
-            if (this._layout) {
-                this._layout.$setFlag();
-                var len:number = this.numChildren;
-                for (var i:number = 0; i < len; i++) {
-                    this._layout.addElementAt(this.getChildAt(i), i);
-                }
-            }
-        }
-
         public $onFrameEnd() {
             this._resetUIProperty();
             super.$onFrameEnd();
-            if (this.layout && this.$getFlag(4) && !(this.parent instanceof flower.Group)) {
-                this.layout.$setFlag();
-            }
-            if (this.layout) {
-                this.layout.updateList(this.width, this.height);
-                this.$removeFlag(4);
-            }
+            this._resetLayout();
         }
 
         public dispose() {
@@ -47,6 +22,7 @@ module flower {
         }
 
         //////////////////////////////////interface//////////////////////////////////
+        public layout;
         private _binds;
         public eventThis;
         public onAdded;
@@ -67,6 +43,7 @@ module flower {
         public verticalCenter;
         public percentWidth;
         public percentHeight;
+
         public bindProperty(property:string, content:string, checks:Array<any> = null) {
         }
 
@@ -80,9 +57,15 @@ module flower {
         public changeState(state:string):string {
             return "";
         }
+
         private _resetUIProperty():void {
 
         }
+
+        private _resetLayout():void {
+
+        }
+
         //////container//////
         protected addUIEvents() {
         }
@@ -132,6 +115,6 @@ module flower {
             }
         }
     }
-    flower.Component.register(Group,true);
+    flower.Component.register(Group, true);
 }
 

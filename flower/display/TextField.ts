@@ -66,7 +66,7 @@ module flower {
             this._TextField[3] = size.width;
             this._TextField[4] = size.height;
             this.$removeFlag(2);
-            this.$addFlag(10);
+            this.$addFlag(0x200);
             this.$propagateFlagsUp(4);
         }
 
@@ -91,7 +91,7 @@ module flower {
         public _invalidateNativeText() {
             this.$addFlag(1);
             if (!this.$getFlag(2)) {
-                this.$addFlag(2);
+                this.$addFlag(0x2);
             }
         }
 

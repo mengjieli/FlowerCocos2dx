@@ -2,15 +2,28 @@ module flower {
 
     export class Mask extends flower.DisplayObject implements flower.DisplayObjectContainer {
 
-        private _shape:flower.Shape;
+        protected _shape:flower.Shape;
 
         public constructor() {
             super();
-            this._shape = new flower.Shape();
             this._show = System.getNativeShow("Mask");
             this._nativeClass = "Mask";
             flower.Container.init(this);
-            System.Mask.init(this._show,this._shape._show);
+            this._shape = new flower.Shape();
+            System.Mask.init(this._show, this._shape._show);
+        }
+
+        public set shape(val:flower.Shape) {
+            if (val == null) {
+                if (flower.Engine.DEBUG) {
+                    flower.DebugInfo.debug("Mask.shape 不能设置为空", flower.DebugInfo.WARN);
+                }
+                return;
+            }
+            this._shape.dispose();
+            this._shape = val;
+            this._shape._parent = this;
+            System.Mask.init(this._show, this._shape._show);
         }
 
         public get shape():flower.Shape {
@@ -28,8 +41,18 @@ module flower {
             }
             System.cycleNativeShow("Mask", show);
         }
-
         //////////////////////////////////interface//////////////////////////////////
+        public $onFrameEnd() {
+            if (this.$getFlag(0x4)) {
+                this["_resetChildIndex"]();
+            }
+            this._shape.$onFrameEnd();
+            var childs = this["_childs"];
+            for (var i:number = 0, len:number = childs.length; i < len; i++) {
+                childs[i].$onFrameEnd();
+            }
+        }
+
         public _getMouseTarget(matrix:flower.Matrix, mutiply:boolean):flower.DisplayObject {
             return null;
         }
@@ -54,6 +77,10 @@ module flower {
 
         }
 
+        public removeAll() {
+
+        }
+
         public setChildIndex(child:flower.DisplayObject, index:number) {
 
         }
@@ -69,11 +96,7 @@ module flower {
         public mesureWidth:number;
         public mesureHeight:number;
         public numChildren:number;
-
-        public $getFlag(pos:number):boolean {
-            return false;
-        }
     }
 
-    flower.Container.register(Mask);
+    flower.Container.register(Mask,true);
 }

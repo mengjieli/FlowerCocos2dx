@@ -105,11 +105,11 @@ module flower {
             if (!this._record.length) {
                 return;
             }
-            this.$addFlag(5);
+            this.$addFlag(0x100);
         }
 
         public $onFrameEnd() {
-            if(this.$getFlag(5)) {
+            if(this.$getFlag(0x100)) {
                 var record = this._record;
                 var fillColor = this._fillColor;
                 var fillAlpha = this._fillAlpha;
@@ -131,7 +131,7 @@ module flower {
                 this._lineWidth = lineWidth;
                 this._lineColor = lineColor;
                 this._lineAlpha = lineAlpha;
-                this.$removeFlag(5);
+                this.$removeFlag(0x100);
             }
         }
 

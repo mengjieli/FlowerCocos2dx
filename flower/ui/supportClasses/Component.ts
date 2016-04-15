@@ -26,8 +26,39 @@ module flower {
             component.addUIEvents();
         }
 
-        public static register(clazz:any, isContainer:boolean = false) {
+        public static register(clazz:any, isContainer:boolean = false, hasLayout:boolean = true) {
             var p = clazz.prototype;
+            if (isContainer && hasLayout) {
+                Object.defineProperty(p, "layout", {
+                    get: function () {
+                        return this._layout;
+                    },
+                    set: function (val) {
+                        if (this._layout) {
+                            this._layout.$clear();
+                        }
+                        this._layout = val;
+                        if (this._layout) {
+                            this._layout.$setFlag();
+                            var len = this.numChildren;
+                            for (var i = 0; i < len; i++) {
+                                this._layout.addElementAt(this.getChildAt(i), i);
+                            }
+                        }
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
+                p._resetLayout = function () {
+                    if (this.layout && this.$getFlag(0x8) && !(this.parent instanceof flower.Group)) {
+                        this.layout.$setFlag();
+                    }
+                    if (this.layout) {
+                        this.layout.updateList(this.width, this.height);
+                        this.$removeFlag(0x8);
+                    }
+                }
+            }
             p.addUIEvents = function () {
                 this.addListener(flower.Event.ADDED, this.onEXEAdded, this);
             }
@@ -171,7 +202,7 @@ module flower {
                         }
                     }
                     this._topAlgin = val;
-                    this.$addFlag(10);
+                    this.$addFlag(0x200);
                 },
                 enumerable: true,
                 configurable: true
@@ -182,7 +213,7 @@ module flower {
                 },
                 set: function (val) {
                     this._top = +val || 0;
-                    this.$addFlag(10);
+                    this.$addFlag(0x200);
                 },
                 enumerable: true,
                 configurable: true
@@ -198,7 +229,7 @@ module flower {
                         }
                     }
                     this._bottomAlgin = val;
-                    this.$addFlag(10);
+                    this.$addFlag(0x200);
                 },
                 enumerable: true,
                 configurable: true
@@ -209,7 +240,7 @@ module flower {
                 },
                 set: function (val) {
                     this._bottom = +val || 0;
-                    this.$addFlag(10);
+                    this.$addFlag(0x200);
                 },
                 enumerable: true,
                 configurable: true
@@ -225,7 +256,7 @@ module flower {
                         }
                     }
                     this._leftAlgin = val;
-                    this.$addFlag(10);
+                    this.$addFlag(0x200);
                 },
                 enumerable: true,
                 configurable: true
@@ -236,7 +267,7 @@ module flower {
                 },
                 set: function (val) {
                     this._left = +val || 0;
-                    this.$addFlag(10);
+                    this.$addFlag(0x200);
                 },
                 enumerable: true,
                 configurable: true
@@ -252,7 +283,7 @@ module flower {
                         }
                     }
                     this._rightAlgin = val;
-                    this.$addFlag(10);
+                    this.$addFlag(0x200);
                 },
                 enumerable: true,
                 configurable: true
@@ -263,7 +294,7 @@ module flower {
                 },
                 set: function (val) {
                     this._right = val;
-                    this.$addFlag(10);
+                    this.$addFlag(0x200);
                 },
                 enumerable: true,
                 configurable: true
@@ -276,7 +307,7 @@ module flower {
                         }
                     }
                     this._horizontalCenterAlgin = val;
-                    this.$addFlag(10);
+                    this.$addFlag(0x200);
                 },
                 enumerable: true,
                 configurable: true
@@ -287,7 +318,7 @@ module flower {
                 },
                 set: function (val) {
                     this._horizontalCenter = val;
-                    this.$addFlag(10);
+                    this.$addFlag(0x200);
                 },
                 enumerable: true,
                 configurable: true
@@ -300,7 +331,7 @@ module flower {
                         }
                     }
                     this._verticalCenterAlgin = val;
-                    this.$addFlag(10);
+                    this.$addFlag(0x200);
                 },
                 enumerable: true,
                 configurable: true
@@ -311,7 +342,7 @@ module flower {
                 },
                 set: function (val) {
                     this._verticalCenter = val;
-                    this.$addFlag(10);
+                    this.$addFlag(0x200);
                 },
                 enumerable: true,
                 configurable: true
@@ -324,7 +355,7 @@ module flower {
                     val = +val;
                     val = val < 0 ? 0 : val;
                     this._percentWidth = val;
-                    this.$addFlag(10);
+                    this.$addFlag(0x200);
                 },
                 enumerable: true,
                 configurable: true
@@ -337,7 +368,7 @@ module flower {
                     val = +val;
                     val = val < 0 ? 0 : val;
                     this._percentHeight = val;
-                    this.$addFlag(10);
+                    this.$addFlag(0x200);
                 },
                 enumerable: true,
                 configurable: true
@@ -345,7 +376,7 @@ module flower {
 
             if (isContainer) {
                 p._resetUIProperty = function () {
-                    if (this.layout == null && this.$getFlag(10)) {
+                    if (this.layout == null && this.$getFlag(0x200)) {
                         if (this._percentWidth >= 0) {
                             this.width = this.parent.width * this._percentWidth / 100;
                         }
@@ -410,13 +441,13 @@ module flower {
                         if (this._horizontalCenterAlgin != "") {
                             this.x = (this.parent.width - this.width * this.scaleX) * .5 + this._horizontalCenter;
                         }
-                        this.$removeFlag(10);
+                        this.$removeFlag(0x200);
                     }
                 }
             } else {
                 p._resetUIProperty = function () {
-                    if (this.$getFlag(10) || this.parent.$getFlag(10)) {
-                        this.$removeFlag(10);
+                    if (this.$getFlag(0x200) || this.parent.$getFlag(0x200)) {
+                        this.$removeFlag(0x200);
                         if (this._percentWidth >= 0) {
                             this.width = this.parent.width * this._percentWidth / 100;
                         }

@@ -1,9 +1,5 @@
 module flower {
 	export class ArrayValue {
-		public static ADD:string;
-		public static DEL:string;
-		public static LENGTH:string;
-		public static UPDATE:string;
 		private _events:any;
 		private _length:number;
 		private list:Array<any>;
@@ -11,7 +7,7 @@ module flower {
 		private _rangeMinKey:string = "";
 		private _rangeMaxKey:string = "";
 
-		public constructor(initList:Array<any>)
+		public constructor(initList:Array<any>=null)
 		{
 			this._events = {};
 			this.list = initList || [];
@@ -19,6 +15,13 @@ module flower {
 		}
 
 		public push(item:any)
+		{
+			this.list.push(item);
+			this.length = this._length + 1;
+			this.dispatch("add",item);
+		}
+
+		public addChild(item:any)
 		{
 			this.list.push(item);
 			this.length = this._length + 1;
@@ -370,7 +373,7 @@ module flower {
 			}
 		}
 
-		public _addListener(type:string,listener:Function,thisObject:any)
+		public addListener(type:string,listener:Function,thisObject:any)
 		{
 			if(!this._events[type])
 			{
@@ -495,8 +498,4 @@ module flower {
 	}
 }
 
-flower.ArrayValue.ADD = "add";
-flower.ArrayValue.DEL = "del";
-flower.ArrayValue.LENGTH = "length";
-flower.ArrayValue.UPDATE = "update";
 flower.ArrayValue.pool = new Array<flower.ArrayValue>();

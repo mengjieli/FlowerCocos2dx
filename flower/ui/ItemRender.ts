@@ -1,39 +1,38 @@
 module flower {
-	export class ItemRender extends flower.Group {
-		private _data:any;
-		private _itemIndex:any;
-		private _selected:boolean = false;
+    export class ItemRender extends flower.Group {
 
-		public constructor()
-		{
-			super();
-		}
+        private _data:any;
+        private _itemIndex:any;
+        private _selected:boolean = false;
 
-		public get data():any
-		{
-			return this._data;
-		}
+        public constructor() {
+            super();
+        }
 
-		public set data(val:any)
-		{
-			this._data = val;
-		}
+        public get data():any {
+            return this._data;
+        }
 
-		public get itemIndex():number
-		{
-			return this._itemIndex;
-		}
+        public set data(val:any) {
+            this._data = val;
+            this.setData(this._data);
+        }
 
-		public $setItemIndex(val:number)
-		{
-			this._itemIndex = val;
-		}
+        protected setData(val:any) {
+        }
 
-		public get selected():boolean
-		{
-			return this._selected;
-		}
+        public get itemIndex():number {
+            return this._itemIndex;
+        }
 
-	}
+        public $setItemIndex(val:number) {
+            this._itemIndex = val;
+        }
+
+        public get selected():boolean {
+            return this._selected;
+        }
+
+    }
 }
 

@@ -1,5 +1,5 @@
 module flower {
-    export class Image extends flower.Bitmap {
+    export class Image extends flower.Bitmap implements flower.UIComponent {
         private _loader:flower.URLLoader;
         private _source:any;
 
@@ -28,7 +28,7 @@ module flower {
 
         public _setTexture(val:flower.Texture2D) {
             super._setTexture(val);
-            this.$addFlag(10);
+            this.$addFlag(0x200);
         }
 
         public set src(val:any) {

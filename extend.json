@@ -304,7 +304,19 @@
     "flower.display.Shape"
   ],
   [
+    "flower.ui.MaskUI",
+    "flower.display.Mask"
+  ],
+  [
+    "flower.ui.Scroller",
+    "flower.ui.MaskUI"
+  ],
+  [
     "flower.ui.UIParser",
+    ""
+  ],
+  [
+    "flower.ui.UIComponent",
     ""
   ],
   [
@@ -368,15 +380,7 @@
     "flower.display.Sprite"
   ],
   [
-    "test.TestShape",
-    "flower.ui.Group"
-  ],
-  [
     "test.TestCase",
-    ""
-  ],
-  [
-    "test.TestTween",
     ""
   ],
   [
@@ -384,20 +388,8 @@
     ""
   ],
   [
-    "test.ui.MyPanelBase",
-    "flower.ui.Group"
-  ],
-  [
-    "test.ui.TestLayout",
-    "flower.ui.Group"
-  ],
-  [
     "test.ui.TestUpdateUI",
     "flower.ui.Group"
-  ],
-  [
-    "test.ui.TestParser",
-    "flower.display.Sprite"
   ],
   [
     "test.ui.TestUI",

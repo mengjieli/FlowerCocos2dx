@@ -1,5 +1,5 @@
 module flower {
-    export class Label extends flower.TextField {
+    export class Label extends flower.TextField implements flower.UIComponent {
 
         public constructor() {
             super();
@@ -8,7 +8,7 @@ module flower {
 
         public _setNativeText() {
             super._setNativeText();
-            this.$addFlag(10);
+            this.$addFlag(0x200);
         }
 
         public $onFrameEnd() {

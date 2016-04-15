@@ -5,6 +5,7 @@ module flower {
 		addChildAt(child:flower.DisplayObject,index?:number);
 		removeChild(child:flower.DisplayObject);
 		removeChildAt(index:number);
+		removeAll();
 		setChildIndex(child:flower.DisplayObject,index:number);
 		getChildIndex(child:flower.DisplayObject):number;
 		contains(child:flower.DisplayObject):boolean;

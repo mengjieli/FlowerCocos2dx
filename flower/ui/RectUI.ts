@@ -17,12 +17,12 @@ module flower {
         }
 
         public _setWidth(val:number) {
-            this.scaleX = val;
+            this._width = val;
             this.$addFlag(1);
         }
 
         public _setHeight(val:number) {
-            this.scaleY = val;
+            this._height = val;
             this.$addFlag(1);
         }
 

@@ -1,38 +1,131 @@
 module flower {
-    export class UIParser {
-        private classes:any;
-        private parseContent:string;
-        private id:number = 0;
-
-        public constructor() {
-            this.classes = {};
-            this.classes.f = {
+    export class UIParser extends flower.EventDispatcher {
+        private static classes = {
+            f: {
+                "Object": "Object",
+                "ArrayValue": "flower.ArrayValue",
+                "BooleanValue": "flower.BooleanValue",
+                "IntValue": "flower.IntValue",
+                "NumberValue": "flower.NumberValue",
+                "ObjectValue": "flower.ObjectValue",
+                "StringValue": "flower.StringValue",
+                "UIntValue": "flower.UIntValue",
+                "TextField": "flower.TextField",
+                "Bitmap": "flower.Bitmap",
+                "Shape": "flower.Shape",
+                "Mask": "flower.Mask",
                 "Label": "flower.Label",
                 "Image": "flower.Image",
                 "Group": "flower.Group",
                 "Button": "flower.Button",
                 "RectUI": "flower.RectUI",
+                "MaskUI": "flower.MaskUI",
+                "Scroller": "flower.Scroller",
+                "DataGroup": "flower.DataGroup",
+                "ItemRender": "flower.ItemRender",
                 "LinearLayoutBase": "flower.LinearLayoutBase",
                 "HorizontalLayout": "flower.HorizontalLayout",
                 "VerticalLayout": "flower.VerticalLayout"
-            };
-            this.classes.local = {};
-            this.classes.localContent = {};
+            },
+            local: {},
+            localContent: {},
+            localURL: {}
+        };
+        private static id:number = 0;
+
+        private _className:string;
+        private classes:any;
+        private parseContent:string;
+        private parseUIAsyncFlag:boolean;
+        private loadContent:XMLElement;
+        private loadData:any;
+        private rootXML:XMLElement;
+
+        public constructor() {
+            super();
+            this.classes = flower.UIParser.classes;
         }
 
-        public getLocalUIClass(name:string):any {
-            return this.classes.local[name];
+        public parseUIAsync(url:string, data:any = null):any {
+            this.loadData = data;
+            var loader = new flower.URLLoader(url);
+            loader.load();
+            loader.addListener(flower.Event.COMPLETE, this.loadContentComplete, this);
+            loader.addListener(flower.Event.ERROR, this.loadContentError, this);
+            this.parseUIAsyncFlag = true;
         }
 
-        public addLocalUIClass(name:string, cls:any) {
-            this.classes.local[name] = cls;
+        public parseAsync(url:string):any {
+            var loader = new flower.URLLoader(url);
+            loader.load();
+            loader.addListener(flower.Event.COMPLETE, this.loadContentComplete, this);
+            loader.addListener(flower.Event.ERROR, this.loadContentError, this);
+            this.parseUIAsyncFlag = false;
         }
 
-        public setLocalUIClassContent(name:string, content:string) {
-            this.classes.localContent[name] = content;
+        private loadContentError(e:flower.Event):void {
+            if (this.hasListener(Event.ERROR)) {
+                this.dispatchWidth(Event.ERROR, "UIParse 异步加载资源出错 :" + (<URLLoader>e.currentTarget).url);
+            } else {
+                if (Engine.DEBUG) {
+                    DebugInfo.debug("UIParse 异步加载资源出错 :" + (<URLLoader>e.currentTarget).url, DebugInfo.ERROR);
+                }
+            }
         }
 
-        public parseUI(content:any, data:any):any {
+        private loadContentComplete(e:flower.Event):void {
+            this.relationUI = [];
+            var xml:flower.XMLElement = flower.XMLElement.parse(e.data);
+            this.loadContent = xml;
+            var list = xml.getAllElements();
+            for (var i = 0; i < list.length; i++) {
+                var name = list[i].name;
+                var nameSpace = name.split(":")[0];
+                name = name.split(":")[1];
+                if (nameSpace == "local") {
+                    if (!this.classes.local[name] && !this.classes.localContent[name]) {
+                        if (!this.classes.localURL[name]) {
+                            if (Engine.DEBUG) {
+                                DebugInfo.debug("找不到 UI 对应的路径， UI 类名:" + name, DebugInfo.ERROR);
+                            }
+                            return;
+                        }
+                        this.relationUI.push(this.classes.localURL[name]);
+                    }
+                }
+            }
+            this.relationIndex = 0;
+            this.loadNextRelationUI();
+        }
+
+        private relationUI;
+        private relationIndex:number;
+
+        private loadNextRelationUI(e:flower.Event = null):void {
+            if (e) {
+                this.relationIndex++;
+            }
+            if (this.relationIndex >= this.relationUI.length) {
+                this.dispatchWidth(Event.COMPLETE, this.parseUIAsyncFlag ? this.parseUI(this.loadContent, this.loadData) : this.parse(this.loadContent));
+            } else {
+                var parser = new UIParser();
+                parser.parseAsync(this.relationUI[this.relationIndex]);
+                parser.addListener(flower.Event.COMPLETE, this.loadNextRelationUI, this);
+                parser.addListener(Event.ERROR, this.relationLoadError, this);
+            }
+        }
+
+        private relationLoadError(e:Event):void {
+            if (this.hasListener(Event.ERROR)) {
+                this.dispatchWidth(Event.ERROR, e.data);
+            } else {
+                if (Engine.DEBUG) {
+                    DebugInfo.debug(e.data, DebugInfo.ERROR);
+                }
+            }
+        }
+
+        public parseUI(content:any, data:any = null):any {
             var className = this.parse(content);
             var UIClass = this.classes.local[className];
             if (data) {
@@ -42,7 +135,6 @@ module flower {
         }
 
         public parse(content:any):string {
-            //trace("解析UI:", content);
             this.parseContent = content;
             var xml:flower.XMLElement;
             if (typeof(content) == "string") {
@@ -57,9 +149,16 @@ module flower {
                 }
                 return null;
             }
+            this.rootXML = xml;
             var className = this.decodeRootComponent(xml, content);
             this.parseContent = "";
+            this._className = className;
+            this.rootXML = null;
             return className;
+        }
+
+        public get className():string {
+            return this._className;
         }
 
         private decodeRootComponent(xml:flower.XMLElement, classContent:string):string {
@@ -76,6 +175,9 @@ module flower {
                 extendClass = uiname;
             } else {
                 extendClass = this.classes[uinameNS][uiname];
+                if (!extendClass && this.classes.localContent[extendClass]) {
+                    this.parse(this.classes.localContent[extendClass]);
+                }
             }
             var classAtr:flower.XMLAttribute = xml.getAttribute("class");
             if (classAtr) {
@@ -89,7 +191,7 @@ module flower {
                     packages = [];
                 }
             } else {
-                className = "$UI" + this.id++;
+                className = "$UI" + UIParser.id++;
                 allClassName = className;
             }
             var changeAllClassName = allClassName;
@@ -98,7 +200,7 @@ module flower {
                     return allClassName;
                 } else {
                     changeAllClassName = changeAllClassName.slice(0, changeAllClassName.length - className.length);
-                    className = "$UI" + this.id++;
+                    className = "$UI" + UIParser.id++;
                     changeAllClassName += className;
                 }
             }
@@ -110,8 +212,8 @@ module flower {
             }
             content += before + "var " + className + " = (function (_super) {\n";
             content += before + "\t__extends(" + className + ", _super);\n";
-            content += before + "\tfunction " + className + "(data) {\n";
-            content += before + "\t\tif(data) this.data = data;\n";
+            content += before + "\tfunction " + className + "(_data) {\n";
+            content += before + "\t\tif(_data) this._data = _data;\n";
             content += before + "\t\t _super.call(this);\n";
             var scriptInfo = {
                 content: ""
@@ -143,7 +245,7 @@ module flower {
                 }
             }
             content += classEnd;
-            content += "\n\nUIParser.registerUIClass(\"" + allClassName + "\", " + changeAllClassName + ");\n";
+            content += "\n\nUIParser.registerLocalUIClass(\"" + allClassName + "\", " + changeAllClassName + ");\n";
             //trace("解析后内容:\n", content);
             if (Engine.DEBUG) {
                 try {
@@ -154,7 +256,7 @@ module flower {
             } else {
                 eval(content);
             }
-            this.setLocalUIClassContent(allClassName, classContent);
+            flower.UIParser.setLocalUIClassContent(allClassName, classContent);
             trace("解析类:\n", content);
             return allClassName;
         }
@@ -190,17 +292,22 @@ module flower {
             if (createClass) {
                 var createClassNameSpace = xml.name.split(":")[0];
                 var createClassName = xml.name.split(":")[1];
-                if (createClassNameSpace != "local") {
-                    createClassName = this.classes[createClassNameSpace][createClassName];
-                }
-                thisObj = createClassName.split(".")[createClassName.split(".").length - 1];
-                thisObj = thisObj.toLocaleLowerCase();
-                if (createClassNameSpace == "local") {
-                    setObject += before + "\tvar " + thisObj + " = new (flower.UIParser.getLocalUIClass(\"" + createClassName + "\"))();\n";
+                if (createClassNameSpace == "local" && createClassName == "Object") {
+                    thisObj = "object";
+                    setObject += before + "\t" + thisObj + " = {};\n";
                 } else {
-                    setObject += before + "\tvar " + thisObj + " = new " + createClassName + "();\n";
+                    if (createClassNameSpace != "local") {
+                        createClassName = this.classes[createClassNameSpace][createClassName];
+                    }
+                    thisObj = createClassName.split(".")[createClassName.split(".").length - 1];
+                    thisObj = thisObj.toLocaleLowerCase();
+                    if (createClassNameSpace == "local") {
+                        setObject += before + "\tvar " + thisObj + " = new (flower.UIParser.getLocalUIClass(\"" + createClassName + "\"))();\n";
+                    } else {
+                        setObject += before + "\tvar " + thisObj + " = new " + createClassName + "();\n";
+                    }
+                    setObject += before + "\t" + thisObj + ".eventThis = this;\n";
                 }
-                setObject += before + "\t" + thisObj + ".eventThis = this;\n";
             }
             for (var i:number = 0; i < xml.attributes.length; i++) {
                 var atrName:string = xml.attributes[i].name;
@@ -244,7 +351,10 @@ module flower {
                         if (this.classes.local[childName]) {
                             childClass = childName;
                         } else {
-                            if (flower.Engine.DEBUG) {
+                            if (this.classes.localContent[childName]) {
+                                this.parse(this.classes.localContent[childName]);
+                                childClass = this.classes.local[childName];
+                            } else if (flower.Engine.DEBUG) {
                                 flower.DebugInfo.debug("解析 UI 出错:无法解析的类名 " + childName + " :\n" + this.parseContent, flower.DebugInfo.ERROR);
                             }
                         }
@@ -268,9 +378,16 @@ module flower {
                         itemClassName += nameIndex[itemClassName];
                     }
                     if (childClass == null) {
-                        funcName = "$get" + itemClassName;
-                        setObject += before + "\t" + thisObj + "." + childName + " = this." + funcName + "(" + thisObj + ");\n";
-                        this.decodeObject(before, className, funcName, true, item, hasLocalNS, propertyFunc, nameIndex);
+                        if (childName == "itemRender") {
+                            for (var n = 0; n < this.rootXML.namesapces.length; n++) {
+                                item.addNameSpace(this.rootXML.namesapces[n]);
+                            }
+                            setObject += before + "\t" + thisObj + "." + childName + " = flower.UIParser.getLocalUIClass(\"" + (new UIParser()).parse(item) + "\");\n";
+                        } else {
+                            funcName = "$get" + itemClassName;
+                            setObject += before + "\t" + thisObj + "." + childName + " = this." + funcName + "(" + thisObj + ");\n";
+                            this.decodeObject(before, className, funcName, true, item, hasLocalNS, propertyFunc, nameIndex);
+                        }
                     } else {
                         var idAtr:XMLAttribute = item.getAttribute("id");
                         funcName = "$get" + itemClassName;
@@ -318,34 +435,24 @@ module flower {
             return true;
         }
 
-        public static ist:flower.UIParser;
-
-        public static parse(content:any):string {
-            if (!flower.UIParser.ist) {
-                flower.UIParser.ist = new flower.UIParser();
-            }
-            return flower.UIParser.ist.parse(content);
+        public static registerLocalUIClass(name:string, cls:any) {
+            flower.UIParser.classes.local[name] = cls;
         }
 
-        public static parseUI(content:any, data:any = null):any {
-            if (!flower.UIParser.ist) {
-                flower.UIParser.ist = new flower.UIParser();
-            }
-            return flower.UIParser.ist.parseUI(content, data);
+        public static setLocalUIClassContent(name:string, content:string) {
+            flower.UIParser.classes.localContent[name] = content;
+        }
+
+        public static getLocalUIClassContent(name:string) {
+            return flower.UIParser.classes.localContent[name];
         }
 
         public static getLocalUIClass(name:string):any {
-            if (!flower.UIParser.ist) {
-                flower.UIParser.ist = new flower.UIParser();
-            }
-            return flower.UIParser.ist.getLocalUIClass(name);
+            return this.classes.local[name];
         }
 
-        public static registerUIClass(name:string, cls:any) {
-            if (!flower.UIParser.ist) {
-                flower.UIParser.ist = new flower.UIParser();
-            }
-            flower.UIParser.ist.addLocalUIClass(name, cls);
+        public static setLocalUIURL(name:string, url:string) {
+            this.classes.localURL[name] = url;
         }
     }
 }

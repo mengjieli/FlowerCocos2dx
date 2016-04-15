@@ -8,39 +8,37 @@ module test {
             super();
             this.percentWidth = 100;
             this.percentHeight = 100;
-            this.update();
+            this.load();
             test.DebugServer.socket.register(3005, this.receiveFileChange, this);
         }
 
-        private update():void {
-            var load:flower.URLLoaderList = new flower.URLLoaderList([this.url]);
-            load.addListener(flower.Event.COMPLETE, this.onLoadComplete, this);
-            load.load();
+        private load():void {
+            //var load:flower.URLLoaderList = new flower.URLLoaderList(this.urls);
+            //load.addListener(flower.Event.COMPLETE, this.onLoadComplete, this);
+            //load.load();
+            flower.UIParser.setLocalUIURL("PanelBackground", "res/uxml/PanelBackground.fxml");
+            var parse = new flower.UIParser();
+            parse.parseUIAsync("res/uxml/Panel.xml")
+            parse.addListener(flower.Event.COMPLETE, this.onLoadComplete, this);
         }
 
         private onLoadComplete(e:flower.Event):void {
-            var content = e.data[0];
-            if (content != this.content) {
-                if (this.panel) {
-                    this.panel.dispose();
-                }
-                this.panel = flower.UIParser.parseUI(content);
-                this.addChild(this.panel);
-                this.content = content;
-            }
+            this.panel = e.data;//(new flower.UIParser()).parseUI(e.data);
+            this.addChild(this.panel);
+            //this.content = (<flower.UIParser>e.currentTarget).className;
         }
 
         private receiveFileChange(cmd:number, msg:flower.VByteArray):void {
             var len = msg.readUInt();
-            for(var i = 0; i < len; i++) {
+            for (var i = 0; i < len; i++) {
                 var url = msg.readUTF();
                 var content = msg.readUTF();
-                if(url == this.url) {
+                if (url == this.url) {
                     if (content != this.content) {
                         if (this.panel) {
                             this.panel.dispose();
                         }
-                        this.panel = flower.UIParser.parseUI(content);
+                        this.panel = (new flower.UIParser()).parseUI(content);
                         this.addChild(this.panel);
                         this.content = content;
                     }

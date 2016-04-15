@@ -53,6 +53,7 @@ module flower {
 		public static CONNECT:string;
 		public static CLOSE:string;
 		public static ERROR:string;
+		public static UPDATE:string;
 		public static _eventPool:Array<flower.Event>;
 		public static create(type:string,data:any = null):flower.Event
 		{
@@ -94,4 +95,5 @@ flower.Event.REMOVED_FROM_STAGE = "removed_from_stage";
 flower.Event.CONNECT = "connect";
 flower.Event.CLOSE = "close";
 flower.Event.ERROR = "error";
+flower.Event.UPDATE = "update";
 flower.Event._eventPool = new Array<flower.Event>();

@@ -7,7 +7,7 @@ module flower {
             container._childs = new Array<flower.DisplayObject>();
         }
 
-        public static register(clazz:any):void {
+        public static register(clazz:any, isMask:boolean = false):void {
             clazz.prototype._getMouseTarget = function (matrix:flower.Matrix, mutiply:boolean):flower.DisplayObject {
                 if (this._touchEnabled == false || this._visible == false)
                     return null;
@@ -28,7 +28,7 @@ module flower {
                 for (var i:number = len - 1; i >= 0; i--) {
                     if (childs[i].touchEnabled && (mutiply == false || (mutiply == true && childs[i].mutiplyTouchEnabled == true))) {
                         target = childs[i]._getMouseTarget(matrix, mutiply);
-                        if(target) {
+                        if (target) {
                             break;
                         }
                     }
@@ -36,15 +36,31 @@ module flower {
                 matrix.restore();
                 return target;
             }
-            clazz.prototype.addChild = function (child:flower.DisplayObject) {
-                if (child.parent)
-                    child.parent.removeChild(child);
-                this._childs.push(child);
-                child.$parentAlpha = this.$parentAlpha * this.alpha;
-                child.$setParent(this);
-                child.$onAddToStage(this.stage, this._nestLevel + 1);
-                this.$addFlag(3);
-                this.$propagateFlagsUp(4);
+            if (isMask) {
+                clazz.prototype.addChild = function (child:flower.DisplayObject) {
+                    if (child == this._shape) {
+                        return;
+                    }
+                    if (child.parent)
+                        child.parent.removeChild(child);
+                    this._childs.push(child);
+                    child.$parentAlpha = this.$parentAlpha * this.alpha;
+                    child.$setParent(this);
+                    child.$onAddToStage(this.stage, this._nestLevel + 1);
+                    this.$addFlag(0x4);
+                    this.$propagateFlagsUp(4);
+                }
+            } else {
+                clazz.prototype.addChild = function (child:flower.DisplayObject) {
+                    if (child.parent)
+                        child.parent.removeChild(child);
+                    this._childs.push(child);
+                    child.$parentAlpha = this.$parentAlpha * this.alpha;
+                    child.$setParent(this);
+                    child.$onAddToStage(this.stage, this._nestLevel + 1);
+                    this.$addFlag(0x4);
+                    this.$propagateFlagsUp(4);
+                }
             }
             clazz.prototype.getChildAt = function (index:number):flower.DisplayObject {
                 index = +index & ~0;
@@ -61,7 +77,7 @@ module flower {
                     child.$parentAlpha = this.$parentAlpha * this.alpha;
                     child.$setParent(this);
                     child.$onAddToStage(this.stage, this._nestLevel + 1);
-                    this.$addFlag(3);
+                    this.$addFlag(0x4);
                     this.$propagateFlagsUp(4);
                 }
             }
@@ -72,10 +88,21 @@ module flower {
                         child.$parentAlpha = 1;
                         child.$setParent(null);
                         child.$onRemoveFromStage();
-                        this.$addFlag(3);
+                        this.$addFlag(0x4);
                         this.$propagateFlagsUp(4);
                         return child;
                     }
+                }
+                return null;
+            }
+            clazz.prototype.removeAll = function () {
+                while (this._childs.length) {
+                    var child = this._childs.pop();
+                    child.$parentAlpha = 1;
+                    child.$setParent(null);
+                    child.$onRemoveFromStage();
+                    this.$addFlag(0x4);
+                    this.$propagateFlagsUp(4);
                 }
                 return null;
             }
@@ -84,7 +111,7 @@ module flower {
                 child.$parentAlpha = 1;
                 child.$setParent(null);
                 child.$onRemoveFromStage();
-                this.$addFlag(3);
+                this.$addFlag(0x4);
                 this.$propagateFlagsUp(4);
                 return child;
             }
@@ -95,7 +122,7 @@ module flower {
                 }
                 this._childs.splice(childIndex, 1);
                 this._childs.splice(index, 0, child);
-                this.$addFlag(3);
+                this.$addFlag(0x4);
             }
             clazz.prototype._resetChildIndex = function ():void {
                 var i:number;
@@ -131,14 +158,6 @@ module flower {
             }
             clazz.prototype.$getSize = function () {
                 this.$removeFlag(1);
-            }
-            clazz.prototype.$onFrameEnd = function () {
-                if (this.$getFlag(3)) {
-                    this._resetChildIndex();
-                }
-                for (var i:number = 0, len:number = this._childs.length; i < len; i++) {
-                    this._childs[i].$onFrameEnd();
-                }
             }
             Object.defineProperty(clazz.prototype, "numChildren", {
                 get: function () {

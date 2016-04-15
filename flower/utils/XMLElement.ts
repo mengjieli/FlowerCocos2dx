@@ -13,6 +13,10 @@ module flower {
 			this.list = new Array<flower.XMLElement>();
 		}
 
+		public addNameSpace(nameSpace:flower.XMLNameSpace):void {
+			this.namesapces.push(nameSpace);
+		}
+
 		public getAttribute(name:string):flower.XMLAttribute {
 			for(var i = 0; i < this.attributes.length; i++) {
 				if(this.attributes[i].name == name) {
@@ -55,6 +59,14 @@ module flower {
 				if(this.list[i].name == atrName) {
 					res.push(this.list[i]);
 				}
+			}
+			return res;
+		}
+
+		public getAllElements():Array<flower.XMLElement> {
+			var res:Array<flower.XMLElement> = [this];
+			for(var i = 0; i < this.list.length; i++) {
+				res = res.concat(this.list[i].getAllElements());
 			}
 			return res;
 		}

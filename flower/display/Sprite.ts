@@ -21,6 +21,16 @@ module flower {
         }
 
         //////////////////////////////////interface//////////////////////////////////
+        public $onFrameEnd() {
+            if (this.$getFlag(0x4)) {
+                this["_resetChildIndex"]();
+            }
+            var childs = this["_childs"];
+            for (var i:number = 0, len:number = childs.length; i < len; i++) {
+                childs[i].$onFrameEnd();
+            }
+        }
+
         public _getMouseTarget(matrix:flower.Matrix, mutiply:boolean):flower.DisplayObject {
             return null;
         }
@@ -45,6 +55,10 @@ module flower {
 
         }
 
+        public removeAll() {
+
+        }
+
         public setChildIndex(child:flower.DisplayObject, index:number) {
 
         }
@@ -60,10 +74,6 @@ module flower {
         public mesureWidth:number;
         public mesureHeight:number;
         public numChildren:number;
-
-        public $getFlag(pos:number):boolean {
-            return false;
-        }
     }
 
     flower.Container.register(Sprite);
