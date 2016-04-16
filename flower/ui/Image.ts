@@ -49,7 +49,7 @@ module flower {
 
         public $onFrameEnd() {
             super.$onFrameEnd.call(this);
-            this._resetUIProperty();
+            this.resetUIProperty();
         }
 
         public dispose() {
@@ -98,7 +98,8 @@ module flower {
         public changeState(state:string):string {
             return "";
         }
-        private _resetUIProperty():void {
+
+        protected resetUIProperty():void {
 
         }
     }

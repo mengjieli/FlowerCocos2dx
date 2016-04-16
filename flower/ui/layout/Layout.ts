@@ -1,81 +1,93 @@
 module flower {
-	export class Layout {
-		public elements:Array<any> = [];
-		public flag:boolean = false;
+    export class Layout {
 
-		public constructor()
-		{
-		}
+        protected _fixElementSize:boolean = false;
+        protected elements:Array<any> = [];
+        protected flag:boolean = false;
 
-		public addElementAt(element:flower.DisplayObject,index:number)
-		{
-			var len:number = this.elements.length;
-			for(var i:number = 0;i < len; i++)
-			{
-				if(this.elements[i] == element)
-				{
-					this.elements.splice(i,1);
-					break;
-				}
-			}
-			this.elements.splice(index,0,element);
-			this.flag = true;
-		}
+        public constructor() {
+        }
 
-		public setEelementIndex(element:flower.DisplayObject,index:number)
-		{
-			var len:number = this.elements.length;
-			for(var i:number = 0;i < len; i++)
-			{
-				if(this.elements[i] == element)
-				{
-					this.elements.splice(i,1);
-					break;
-				}
-			}
-			this.elements.splice(index,0,element);
-			this.flag = true;
-		}
+        public  isElementsOutSize(startX:number, starY:number, width:number, height:number):boolean {
+            return false;
+        }
 
-		public removeElement(element:flower.DisplayObject)
-		{
-			var len:number = this.elements.length;
-			for(var i:number = 0;i < len; i++)
-			{
-				if(this.elements[i] == element)
-				{
-					this.elements.splice(i,1);
-					break;
-				}
-			}
-			this.flag = true;
-		}
+        public getFirstItemIndex(elementWidth:number, elementHeight:number, startX:number, startY:number):number {
+            return 0;
+        }
 
-		public removeElementAt(index:number)
-		{
-			this.elements.splice(index,1);
-			this.flag = true;
-		}
+        public getContentSize():flower.Size {
+            return null;
+        }
 
-		public $setFlag()
-		{
-			this.flag = true;
-		}
+        public mesureSize(elementWidth:number, elementHeight:number, elementCount:number):flower.Size {
+            return null;
+        }
 
-		public updateList(widt:number,height:number)
-		{
-		}
+        public addElementAt(element:flower.DisplayObject, index:number) {
+            var len:number = this.elements.length;
+            for (var i:number = 0; i < len; i++) {
+                if (this.elements[i] == element) {
+                    this.elements.splice(i, 1);
+                    break;
+                }
+            }
+            this.elements.splice(index, 0, element);
+            this.flag = true;
+        }
 
-		public $clear()
-		{
-			this.elements = [];
-			this.flag = false;
-		}
+        public setEelementIndex(element:flower.DisplayObject, index:number) {
+            var len:number = this.elements.length;
+            for (var i:number = 0; i < len; i++) {
+                if (this.elements[i] == element) {
+                    this.elements.splice(i, 1);
+                    break;
+                }
+            }
+            this.elements.splice(index, 0, element);
+            this.flag = true;
+        }
 
-		public static VerticalAlign:string;
-		public static HorizontalAlign:string;
-		public static NoneAlgin:string;
-	}
+        public removeElement(element:flower.DisplayObject) {
+            var len:number = this.elements.length;
+            for (var i:number = 0; i < len; i++) {
+                if (this.elements[i] == element) {
+                    this.elements.splice(i, 1);
+                    break;
+                }
+            }
+            this.flag = true;
+        }
+
+        public removeElementAt(index:number) {
+            this.elements.splice(index, 1);
+            this.flag = true;
+        }
+
+        public $setFlag() {
+            this.flag = true;
+        }
+
+        public updateList(width:number, height:number, startIndex:number = 0) {
+        }
+
+        public $clear() {
+            this.elements = [];
+            this.flag = false;
+        }
+
+        public get fixElementSize():boolean {
+            return this._fixElementSize;
+        }
+
+        public set fixElementSize(val:boolean) {
+            this._fixElementSize = !!val;
+        }
+
+        public static VerticalAlign:string;
+        public static HorizontalAlign:string;
+        public static NoneAlgin:string;
+    }
 }
 
 flower.Layout.VerticalAlign = "vertical";

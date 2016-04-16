@@ -309,6 +309,10 @@ module flower {
                     setObject += before + "\t" + thisObj + ".eventThis = this;\n";
                 }
             }
+            var idAtr:XMLAttribute = xml.getAttribute("id");
+            if(idAtr) {
+                setObject += before + "\tthis." + idAtr.value + " = " + thisObj + ";\n";
+            }
             for (var i:number = 0; i < xml.attributes.length; i++) {
                 var atrName:string = xml.attributes[i].name;
                 var atrValue:string = xml.attributes[i].value;
@@ -389,14 +393,14 @@ module flower {
                             this.decodeObject(before, className, funcName, true, item, hasLocalNS, propertyFunc, nameIndex);
                         }
                     } else {
-                        var idAtr:XMLAttribute = item.getAttribute("id");
+                        //var idAtr:XMLAttribute = item.getAttribute("id");
                         funcName = "$get" + itemClassName;
-                        if (idAtr) {
-                            setObject += before + "\t" + "this" + "." + idAtr.value + " = this." + funcName + "(" + thisObj + ");\n";
-                            setObject += before + "\t" + thisObj + ".addChild(" + "this" + "." + idAtr.value + ");\n";
-                        } else {
-                            setObject += before + "\t" + thisObj + ".addChild(this." + funcName + "(" + thisObj + "));\n";
-                        }
+                        //if (idAtr) {
+                        //    setObject += before + "\t" + "this" + "." + idAtr.value + " = this." + funcName + "(" + thisObj + ");\n";
+                        //    setObject += before + "\t" + thisObj + ".addChild(" + "this" + "." + idAtr.value + ");\n";
+                        //} else {
+                        //}
+                        setObject += before + "\t" + thisObj + ".addChild(this." + funcName + "(" + thisObj + "));\n";
                         this.decodeObject(before, className, funcName, true, item, hasLocalNS, propertyFunc, nameIndex);
                     }
                 }

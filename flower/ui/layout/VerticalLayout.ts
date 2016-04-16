@@ -4,7 +4,7 @@ module flower {
 		public constructor()
 		{
 			super();
-			this.verticalAlign = flower.Layout.VerticalAlign;
+			this.algin = flower.Layout.VerticalAlign;
 		}
 
 	}

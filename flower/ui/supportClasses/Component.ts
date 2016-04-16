@@ -49,10 +49,10 @@ module flower {
                     enumerable: true,
                     configurable: true
                 });
-                p._resetLayout = function () {
-                    if (this.layout && this.$getFlag(0x8) && !(this.parent instanceof flower.Group)) {
-                        this.layout.$setFlag();
-                    }
+                p.resetLayout = function () {
+                    //if (this.layout && this.$getFlag(0x8) && !(this.parent instanceof flower.Group)) {
+                    //    this.layout.$setFlag();
+                    //}
                     if (this.layout) {
                         this.layout.updateList(this.width, this.height);
                         this.$removeFlag(0x8);
@@ -375,7 +375,7 @@ module flower {
             });
 
             if (isContainer) {
-                p._resetUIProperty = function () {
+                p.resetUIProperty = function () {
                     if (this.layout == null && this.$getFlag(0x200)) {
                         if (this._percentWidth >= 0) {
                             this.width = this.parent.width * this._percentWidth / 100;
@@ -445,7 +445,7 @@ module flower {
                     }
                 }
             } else {
-                p._resetUIProperty = function () {
+                p.resetUIProperty = function () {
                     if (this.$getFlag(0x200) || this.parent.$getFlag(0x200)) {
                         this.$removeFlag(0x200);
                         if (this._percentWidth >= 0) {

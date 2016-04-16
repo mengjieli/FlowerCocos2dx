@@ -1,11 +1,14 @@
 module flower {
-    export class DataGroup extends flower.Group {
+    export class DataGroup extends flower.Group implements IViewPort {
 
         private _data:flower.ArrayValue;
         private _itemRender:any;
         private _items:Array<any>;
-        private _mesureSize:Array<any>;
-        private _showSize:flower.Point;
+        private _viewer:flower.DisplayObject;
+        private _viewWidth:number;
+        private _viewHeight:number;
+        private _contentWidth:number;
+        private _contentHeight:number;
 
         public constructor() {
             super();
@@ -15,50 +18,91 @@ module flower {
             this.$addFlag(0x400);
         }
 
-        public $flushItems() {
-            if (this._data && this._itemRender && this.$getFlag(0x400)) {
-                var list = this._data;
-                if (!this._mesureSize) {
-                    this._mesureSize = [];
-                    for (var i = 0; i < this._data.length; i++) {
-                        this._mesureSize[i] = {
-                            "mesure": true,
-                            "width": 0,
-                            "height": 0
-                        }
-                    }
-                }
+        protected resetLayout():void {
+            if (!this._viewer || !this.layout || !this.layout.fixElementSize) {
+                super.resetLayout();
             }
         }
 
         public $onFrameEnd() {
-            if (this._data && this._itemRender && this.$getFlag(0x400) && !this._showSize) {
+            if (this._viewer) {
+                if (this._viewWidth != this._viewer.width || this._viewHeight != this._viewer.height || this.$getFlag(0x200)) {
+                    this._viewWidth = this._viewer.width;
+                    this._viewHeight = this._viewer.height;
+                    this.$addFlag(0x400);
+                }
+            }
+            if (this._data && this._itemRender && (this.$getFlag(0x400))) {
                 if (!this._items) {
                     this._items = [];
                 }
                 var list = this._data;
                 var newItems = [];
                 var item;
-                for (var i = 0, len = list.length; i < len; i++) {
-                    item = null;
-                    for (var f = 0; f < this._items.length; f++) {
-                        if (this._items[f] == list[i]) {
-                            item = this._items[f];
-                            this._items.splice(f, 1);
+                var itemData;
+                var mesureSize:boolean = false;
+                if (!this._viewer || !this.layout || !this.layout.fixElementSize) {
+                    for (var i = 0, len = list.length; i < len; i++) {
+                        item = null;
+                        itemData = list.getItemAt(i);
+                        for (var f = 0; f < this._items.length; f++) {
+                            if (this._items[f].data == itemData) {
+                                item = this._items[f];
+                                this._items.splice(f, 1);
+                                break;
+                            }
+                        }
+                        if (item == null) {
+                            item = new this._itemRender(itemData);
+                            item.data = itemData;
+                        }
+                        if (item.parent == this) {
+                            this.setChildIndex(item, i);
+                        } else {
+                            this.addChild(item);
+                        }
+                        newItems[i] = item;
+                    }
+                } else {
+                    this.layout.$clear();
+                    var elementWidth:number;
+                    var elementHeight:number;
+                    if (!this._items.length) {
+                        item = new this._itemRender(list.getItemAt(0));
+                        item.data = list.getItemAt(0);
+                        this._items.push(item);
+                    }
+                    elementWidth = this._items[0].width;
+                    elementHeight = this._items[0].height;
+                    var firstItemIndex:number = this.layout.getFirstItemIndex(elementWidth, elementHeight, -this.x, -this.y);
+                    firstItemIndex = firstItemIndex<0?0:firstItemIndex;
+                    for (var i = firstItemIndex; i < list.length; i++) {
+                        item = null;
+                        itemData = list.getItemAt(i);
+                        for (var f = 0; f < this._items.length; f++) {
+                            if (this._items[f].data == itemData) {
+                                item = this._items[f];
+                                this._items.splice(f, 1);
+                                break;
+                            }
+                        }
+                        if (!item) {
+                            item = new this._itemRender(itemData);
+                            item.data = itemData;
+                        }
+                        if (item.parent == this) {
+                            this.setChildIndex(item, i - firstItemIndex);
+                        } else {
+                            this.addChild(item);
+                        }
+                        newItems[i - firstItemIndex] = item;
+                        this.layout.updateList(this._viewWidth, this._viewHeight, firstItemIndex);
+                        if (this.layout.isElementsOutSize(-this.x, -this.y, this._viewWidth, this._viewHeight)) {
                             break;
                         }
                     }
-                    if (item == null) {
-                        item = new this._itemRender(list.getItemAt(i));
-                        item.data = list.getItemAt(i);
-                    }
-                    if (item.parent == this) {
-                        this.setChildIndex(item, i);
-                    } else {
-                        this.addChild(item);
-                    }
-                    newItems[i] = item;
                 }
+                mesureSize = true;
                 while (this._items.length) {
                     this._items.pop().dispose();
                 }
@@ -66,6 +110,25 @@ module flower {
                 this.$removeFlag(0x400);
             }
             super.$onFrameEnd();
+
+            if (mesureSize) {
+                if (!this._viewer || !this.layout || !this.layout.fixElementSize) {
+                    var size = this.layout.getContentSize();
+                    this._contentWidth = size.width;
+                    this._contentHeight = size.height;
+                    flower.Size.release(size);
+                }
+                else if(this._items.length) {
+                    var size = this.layout.mesureSize(this._items[0].width, this._items[0].height, list.length);
+                    this._contentWidth = size.width;
+                    this._contentHeight = size.height;
+                    flower.Size.release(size);
+                }
+            }
+        }
+
+        public onScroll():void {
+            this.$addFlag(0x400);
         }
 
         //////////////////////////////////get&set//////////////////////////////////
@@ -81,7 +144,6 @@ module flower {
             this._items = null;
             this._data = val;
             this.$addFlag(0x400);
-            this._mesureSize = null;
             if (this._data) {
                 this._data.addListener(flower.Event.UPDATE, this.onDataUpdate, this)
             }
@@ -99,13 +161,27 @@ module flower {
             this._items = null;
             this._itemRender = val;
             this.$addFlag(0x400);
-            this._mesureSize = null;
         }
 
         public get numElements():number {
             return this._items.length;
         }
 
+        public set viewer(display:flower.DisplayObject) {
+            this._viewer = display;
+        }
+
+        public get contentWidth():number {
+            return this._contentWidth;
+        }
+
+        public get contentHeight():number {
+            return this._contentHeight;
+        }
+
+        public get scrollEnabled():boolean {
+            return true;
+        }
     }
 }
 

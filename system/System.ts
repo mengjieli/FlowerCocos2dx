@@ -314,6 +314,11 @@ class System {
     };
 
     public static cycleNativeShow(className, show:any):void {
+        show.setPosition(0,0);
+        show.setScale(1);
+        show.setOpacity(255);
+        show.setRotation(0);
+        show.setVisible(true);
         System.nativeShows[className].push(show);
     }
 

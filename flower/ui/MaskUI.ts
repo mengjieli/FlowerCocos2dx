@@ -6,9 +6,9 @@ module flower {
         }
 
         public $onFrameEnd() {
-            this._resetUIProperty();
+            this.resetUIProperty();
             super.$onFrameEnd();
-            this._resetLayout();
+            this.resetLayout();
         }
 
         public dispose() {
@@ -57,11 +57,11 @@ module flower {
             return "";
         }
 
-        private _resetUIProperty():void {
+        protected resetUIProperty():void {
 
         }
 
-        private _resetLayout():void {
+        protected resetLayout():void {
 
         }
         //////container//////

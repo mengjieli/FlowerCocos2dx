@@ -37,7 +37,7 @@ module flower {
                 }
             }
             super.$onFrameEnd.call(this);
-            this._resetUIProperty();
+            this.resetUIProperty();
         }
         //////////////////////////////////interface//////////////////////////////////
         private _binds;
@@ -74,7 +74,7 @@ module flower {
             return "";
         }
 
-        private _resetUIProperty():void {
+        protected resetUIProperty():void {
 
         }
     }

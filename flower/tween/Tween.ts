@@ -330,6 +330,12 @@ module flower {
 			return true;
 		}
 
+		public dispose():void {
+			if(this.timeLine) {
+				this.timeLine.removeTween(this);
+			}
+		}
+
 		public static to(target:any,time:number,propertiesTo:any,ease:string = "None",propertiesFrom:any = null):flower.Tween
 		{
 			var tween:flower.Tween = new flower.Tween(target,time,propertiesTo,ease,propertiesFrom);
