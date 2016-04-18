@@ -1,6 +1,8 @@
 module flower {
     export class Label extends flower.TextField implements flower.UIComponent {
 
+        private _updateFlag:boolean = true;
+
         public constructor() {
             super();
             flower.Component.init(this);
@@ -23,7 +25,6 @@ module flower {
             this._binds = null;
             super.dispose();
         }
-
         //////////////////////////////////interface//////////////////////////////////
         private _binds;
         public eventThis;
@@ -45,6 +46,7 @@ module flower {
         public verticalCenter;
         public percentWidth;
         public percentHeight;
+
         public bindProperty(property:string, content:string, checks:Array<any> = null) {
         }
 

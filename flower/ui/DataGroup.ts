@@ -32,7 +32,7 @@ module flower {
                     this.$addFlag(0x400);
                 }
             }
-            if (this._data && this._itemRender && (this.$getFlag(0x400))) {
+            if (this._data && this._data.length && this._itemRender && (this.$getFlag(0x400))) {
                 if (!this._items) {
                     this._items = [];
                 }

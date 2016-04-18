@@ -8,10 +8,6 @@ module flower {
 		{
 			super();
 			this.list = list;
-		}
-
-		public load()
-		{
 			this.dataList = [];
 			this.index = 0;
 			this.loadNext();
@@ -29,7 +25,6 @@ module flower {
 			var item:any = this.list[this.index];
 			var load:flower.URLLoader = new flower.URLLoader(item);
 			load.addListener(flower.Event.COMPLETE,this.onComplete,this);
-			load.load();
 		}
 
 		private onComplete(e:flower.Event)

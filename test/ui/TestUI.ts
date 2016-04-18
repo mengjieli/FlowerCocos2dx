@@ -3,7 +3,9 @@ module test {
 
         public constructor() {
             super();
+
             flower.Engine.getInstance().addChild(new test.TestUpdateUI());
+            flower.UIParser.registerLocalUIClass("test.LabelItem", test.LabelItem);
             //this.addChild(new test.TestUpdateUI());
             //this.addChild(new test.TestLayout());
 
@@ -24,7 +26,6 @@ module test {
             //    data.push({label:"额" + Math.floor(Math.random()*1000)});
             //},this);
         }
-
     }
 
     export class LabelItem extends flower.ItemRender {
@@ -33,10 +34,10 @@ module test {
         public constructor() {
             super();
             this.label = new flower.Label();
-            this.label.color = 0x00ff00;
+            this.label.color = 0xff00ff;
             this.addChild(this.label);
-            this.width = 100;
-            this.height = 25;
+            this.percentWidth = 100;
+            this.height = 20;
         }
 
         protected setData(val:any) {

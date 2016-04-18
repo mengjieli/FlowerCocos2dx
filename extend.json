@@ -224,10 +224,6 @@
     ""
   ],
   [
-    "flower.res.ResTexture",
-    "flower.res.ResItem"
-  ],
-  [
     "flower.res.ResType",
     ""
   ],
@@ -380,6 +376,10 @@
     ""
   ],
   [
+    "flower.plugin.ImagePlugin",
+    ""
+  ],
+  [
     "test.TestBinding",
     "flower.display.Sprite"
   ],
@@ -402,5 +402,21 @@
   [
     "test.net.DebugServer",
     ""
+  ],
+  [
+    "extension.plist.Plist",
+    ""
+  ],
+  [
+    "extension.plist.PlistFrame",
+    ""
+  ],
+  [
+    "extension.plist.PlistLoader",
+    "flower.events.EventDispatcher"
+  ],
+  [
+    "extension.plist.PlistManager",
+    "flower.events.EventDispatcher"
   ]
 ]

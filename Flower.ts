@@ -14,9 +14,12 @@
 			flower.Res.local = true;
 			flower.Res.localURL = "";
 		}
-		new flower.Engine();
-		new test.TestCase();
+		var engine = new flower.Engine();
+		engine.addListener(flower.Event.READY,this.onEngineReady,this);
 	}
 
+	 private onEngineReady() {
+		 new test.TestCase();
+	 }
 }
 

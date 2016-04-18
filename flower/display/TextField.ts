@@ -1,7 +1,7 @@
 module flower {
     export class TextField extends flower.DisplayObject {
         public static textFieldProperty:any;
-        private _TextField:any;
+        protected _TextField:any;
 
         public constructor() {
             super();
@@ -43,7 +43,7 @@ module flower {
             }
         }
 
-        private _setText(val:string) {
+        protected _setText(val:string) {
             this._TextField[2] = val;
             this._invalidateNativeText();
         }
@@ -137,6 +137,9 @@ module flower {
 
         public set text(val:string) {
             val = val + "";
+            if (val == this._TextField[2]) {
+                return;
+            }
             this._setText(val);
         }
 
@@ -222,7 +225,6 @@ module flower {
             this._TextField[7] = val;
             this._invalidateNativeText();
         }
-
     }
 }
 

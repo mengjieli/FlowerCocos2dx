@@ -1,7 +1,8 @@
 module flower {
     export class Bitmap extends flower.DisplayObject {
+        public static bitmapProperty:any = System.Bitmap;
+
         private _texture:flower.Texture2D;
-        public static bitmapProperty:any;
 
         public constructor(texture:flower.Texture2D = null) {
             super();
@@ -20,37 +21,37 @@ module flower {
                 this._width = this._texture.width;
                 this._height = this._texture.height;
                 this._texture.$addCount();
-                if (p.func) {
-                    this._show[p.func].apply(this._show, [this._texture.$nativeTexture]);
-                    if (System.IDE == IDE.COCOS2DX) {
-                        this._show.setAnchorPoint(0, 1);
-                    }
+                p.exe(this._show, this._texture.$nativeTexture, this._texture.source, this._texture.sourceRotation);
+                if (System.IDE == IDE.COCOS2DX) {
+                    this._show.setAnchorPoint(0, 1);
                 }
-                else {
-                    this._show[p.atr] = this._texture.$nativeTexture;
-                }
+                this._setX(this.x);
+                this._setY(this.y);
             }
             else {
                 this._width = 0;
                 this._height = 0;
-                if (System.IDE == IDE.COCOS2DX) {
-                    if (p.func) {
-                        this._show[p.func].apply(this._show, [flower.Texture2D.blank.$nativeTexture]);
-                    }
-                    else {
-                        this._show[p.atr] = flower.Texture2D.blank.$nativeTexture;
-                    }
-                }
-                else {
-                    if (p.func) {
-                        this._show[p.func].apply(this._show, [null]);
-                    }
-                    else {
-                        this._show[p.atr] = null;
-                    }
-                }
+                p.exe(this._show, flower.Texture2D.blank.$nativeTexture);
             }
             this.$propagateFlagsUp(10);
+        }
+
+        public _getMouseTarget(matrix:flower.Matrix, mutiply:boolean):flower.DisplayObject {
+            matrix.save();
+            if (this._texture) {
+                matrix.translate(-this._texture.offX, -this._texture.offY);
+            }
+            var target = super._getMouseTarget(matrix, mutiply);
+            matrix.restore();
+            return target;
+        }
+
+        public _setX(val:number, offX:number = 0) {
+            super._setX(val, this._texture ? this._texture.offX : 0);
+        }
+
+        public _setY(val:number, offY:number = 0) {
+            super._setY(val, this._texture ? this._texture.offY : 0);
         }
 
         public _setWidth(val:number) {
@@ -78,8 +79,6 @@ module flower {
             this.texture = null;
             System.cycleNativeShow("Bitmap", show);
         }
-
     }
 }
 
-flower.Bitmap.bitmapProperty = System.Bitmap;

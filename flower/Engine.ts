@@ -19,13 +19,7 @@ module flower {
 			System.runTimeLine(flower.Time.$run);
 			this._width = System.width;
 			this._height = System.height;
-			var res:flower.ResTexture = new flower.ResTexture();
-			res.local = flower.Res.local;
-			res.localURL = flower.Res.localURL;
-			res.serverURL = flower.Res.serverURL;
-			res.url = "res/blank.png";
-			var loader:flower.URLLoader = new flower.URLLoader(res);
-			loader.load();
+			var loader:flower.URLLoader = new flower.URLLoader("res/blank.png");
 			loader.addListener(flower.Event.COMPLETE,this.onLoadBlankComplete,this);
 		}
 

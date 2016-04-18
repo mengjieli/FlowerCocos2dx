@@ -49,7 +49,6 @@ module flower {
         public parseUIAsync(url:string, data:any = null):any {
             this.loadData = data;
             var loader = new flower.URLLoader(url);
-            loader.load();
             loader.addListener(flower.Event.COMPLETE, this.loadContentComplete, this);
             loader.addListener(flower.Event.ERROR, this.loadContentError, this);
             this.parseUIAsyncFlag = true;
@@ -57,7 +56,6 @@ module flower {
 
         public parseAsync(url:string):any {
             var loader = new flower.URLLoader(url);
-            loader.load();
             loader.addListener(flower.Event.COMPLETE, this.loadContentComplete, this);
             loader.addListener(flower.Event.ERROR, this.loadContentError, this);
             this.parseUIAsyncFlag = false;

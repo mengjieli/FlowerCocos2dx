@@ -217,7 +217,7 @@ class System {
     public static URLLoader:any = {
         "loadText": {
             "func": function (url, back, errorBack, thisObj) {
-                if (System.isLoading || System.loadingList.length) {
+                if (System.isLoading) {
                     System.loadingList.push([System.URLLoader.loadText.func, url, back, errorBack, thisObj]);
                     return;
                 }
@@ -249,7 +249,7 @@ class System {
         },
         "loadTexture": {
             "func": function (url, back, errorBack, thisObj) {
-                if (System.isLoading || System.loadingList.length) {
+                if (System.isLoading) {
                     System.loadingList.push([System.URLLoader.loadTexture.func, url, back, errorBack, thisObj]);
                     return;
                 }
@@ -314,7 +314,7 @@ class System {
     };
 
     public static cycleNativeShow(className, show:any):void {
-        show.setPosition(0,0);
+        show.setPosition(0, 0);
         show.setScale(1);
         show.setOpacity(255);
         show.setRotation(0);
@@ -337,7 +337,14 @@ class System {
     }
 
     public static Bitmap:any = {
-        "texture": {"func": "initWithTexture"}
+        "texture": {
+            "exe": function (nativeShow, nativeTexture, resource, rotation) {
+                nativeShow.initWithTexture(nativeTexture);
+                if(resource) {
+                    nativeShow.setTextureRect(resource, rotation, {width: resource.width, height: resource.height});
+                }
+            }
+        }
     }
 
     public static Shape:any = {

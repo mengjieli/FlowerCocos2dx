@@ -52,7 +52,7 @@ module flower {
 				if(this.list[i].$count == 0)
 				{
 					flower.Texture2D.safeLock = false;
-					this.list.splice(i,1)[0].$dispose();
+					this.list.splice(i,1)[0].dispose();
 					flower.Texture2D.safeLock = true;
 					return ;
 				}

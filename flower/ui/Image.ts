@@ -1,6 +1,7 @@
 module flower {
     export class Image extends flower.Bitmap implements flower.UIComponent {
-        private _loader:flower.URLLoader;
+
+        private _loader:flower.EventDispatcher;
         private _source:any;
 
         public constructor(source:any = null) {
@@ -11,18 +12,45 @@ module flower {
             }
         }
 
-        private setSource(val:any) {
+        private setSource(val:string|ResItem|flower.Texture2D) {
+            if(val == "" || val == null) {
+                this.texture = null;
+                return;
+            }
             if (this._loader) {
                 this._loader.dispose();
                 this._loader = null;
             }
             if (val instanceof flower.Texture2D) {
-                this.texture = val;
-            }
-            else {
-                this._loader = new flower.URLLoader(val);
-                this._loader.load();
-                this._loader.addListener(flower.Event.COMPLETE, this.onLoadTextureComplete, this);
+                this.texture = <flower.Texture2D>val;
+            } else {
+                var url:string;
+                if (typeof (val) == "string") {
+                    url = <string>val;
+                } else {
+                    url = (<ResItem>val).url;
+                }
+                var arr = url.split("#");
+                if (arr.length > 2) {
+                    var name:string = arr[0];
+                    var url:string;
+                    if (typeof (val) == "string") {
+                        url = val = (<string>val).slice(name.length + 1, (<string>val).length);
+                    } else {
+                        url = (<ResItem>val).url = (<ResItem>val).url.slice(name.length + 1, (<ResItem>val).url.length);
+                    }
+                    var plugin = ImagePlugin.getPlugin(name);
+                    var texture = plugin.getTextrure(url);
+                    if (texture) {
+                        this.texture = texture;
+                    } else {
+                        this._loader = plugin.load(<string|ResItem>val);
+                        this._loader.addListener(flower.Event.COMPLETE, this.onLoadTextureComplete, this);
+                    }
+                } else {
+                    this._loader = new flower.URLLoader(<string|ResItem>val);
+                    this._loader.addListener(flower.Event.COMPLETE, this.onLoadTextureComplete, this);
+                }
             }
         }
 
@@ -44,6 +72,7 @@ module flower {
         }
 
         private onLoadTextureComplete(e:flower.Event) {
+            this._loader = null;
             this.texture = e.data;
         }
 
@@ -64,6 +93,13 @@ module flower {
             super.dispose.call(this);
         }
 
+        public get offX():number {
+            return this.texture?this.texture.offX:0;
+        }
+
+        public get offY():number {
+            return this.texture?this.texture.offY:0;
+        }
         //////////////////////////////////interface//////////////////////////////////
         private _binds;
         public eventThis;
@@ -85,6 +121,7 @@ module flower {
         public verticalCenter;
         public percentWidth;
         public percentHeight;
+
         public bindProperty(property:string, content:string, checks:Array<any> = null) {
         }
 
