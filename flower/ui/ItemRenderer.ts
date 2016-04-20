@@ -1,5 +1,5 @@
 module flower {
-    export class ItemRender extends flower.Group {
+    export class ItemRenderer extends flower.Group {
 
         private _data:any;
         private _itemIndex:any;

@@ -9,6 +9,9 @@ module flower {
                 "NumberValue": "flower.NumberValue",
                 "ObjectValue": "flower.ObjectValue",
                 "StringValue": "flower.StringValue",
+                "Point": "flower.Point",
+                "Size": "flower.Size",
+                "Rectangle": "flower.Rectangle",
                 "UIntValue": "flower.UIntValue",
                 "TextField": "flower.TextField",
                 "Bitmap": "flower.Bitmap",
@@ -22,7 +25,7 @@ module flower {
                 "MaskUI": "flower.MaskUI",
                 "Scroller": "flower.Scroller",
                 "DataGroup": "flower.DataGroup",
-                "ItemRender": "flower.ItemRender",
+                "ItemRenderer": "flower.ItemRenderer",
                 "LinearLayoutBase": "flower.LinearLayoutBase",
                 "HorizontalLayout": "flower.HorizontalLayout",
                 "VerticalLayout": "flower.VerticalLayout"
@@ -249,13 +252,13 @@ module flower {
                 try {
                     eval(content);
                 } catch (e) {
-                    flower.DebugInfo.debug("解析 UI 出错,:\n" + e + "\n" + this.parseContent, flower.DebugInfo.ERROR);
+                    flower.DebugInfo.debug("解析 UI 出错,:\n" + e + "\n" + this.parseContent + "\n\n解析后内容为:\n" + content, flower.DebugInfo.ERROR);
                 }
             } else {
                 eval(content);
             }
             flower.UIParser.setLocalUIClassContent(allClassName, classContent);
-            trace("解析类:\n", content);
+            //trace("解析类:\n", content);
             return allClassName;
         }
 
@@ -308,7 +311,7 @@ module flower {
                 }
             }
             var idAtr:XMLAttribute = xml.getAttribute("id");
-            if(idAtr) {
+            if (idAtr) {
                 setObject += before + "\tthis." + idAtr.value + " = " + thisObj + ";\n";
             }
             for (var i:number = 0; i < xml.attributes.length; i++) {
@@ -318,7 +321,9 @@ module flower {
                 if (atrName == "class") {
                 } else if (atrName == "id") {
                 }
-                else if (atrArray.length == 2) {
+                else if (atrName == "scale9Grid") {
+                    setObject += before + "\t" + thisObj + "." + atrName + " = new flower.Rectangle(" + atrValue + ");\n";
+                } else if (atrArray.length == 2) {
                     var atrState:string = atrArray[1];
                     atrName = atrArray[0];
                     setObject += before + "\t" + thisObj + ".setStatePropertyValue(\"" + atrName + "\", \"" + atrState + "\", \"" + atrValue + "\", [this]);\n";
@@ -380,7 +385,7 @@ module flower {
                         itemClassName += nameIndex[itemClassName];
                     }
                     if (childClass == null) {
-                        if (childName == "itemRender") {
+                        if (childName == "itemRenderer") {
                             for (var n = 0; n < this.rootXML.namesapces.length; n++) {
                                 item.addNameSpace(this.rootXML.namesapces[n]);
                             }
@@ -391,13 +396,7 @@ module flower {
                             this.decodeObject(before, className, funcName, true, item, hasLocalNS, propertyFunc, nameIndex);
                         }
                     } else {
-                        //var idAtr:XMLAttribute = item.getAttribute("id");
                         funcName = "$get" + itemClassName;
-                        //if (idAtr) {
-                        //    setObject += before + "\t" + "this" + "." + idAtr.value + " = this." + funcName + "(" + thisObj + ");\n";
-                        //    setObject += before + "\t" + thisObj + ".addChild(" + "this" + "." + idAtr.value + ");\n";
-                        //} else {
-                        //}
                         setObject += before + "\t" + thisObj + ".addChild(this." + funcName + "(" + thisObj + "));\n";
                         this.decodeObject(before, className, funcName, true, item, hasLocalNS, propertyFunc, nameIndex);
                     }

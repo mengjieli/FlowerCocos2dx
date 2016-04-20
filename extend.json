@@ -84,6 +84,10 @@
     ""
   ],
   [
+    "flower.data.FlowerData",
+    ""
+  ],
+  [
     "flower.data.member.ArrayValue",
     ""
   ],
@@ -228,6 +232,18 @@
     ""
   ],
   [
+    "flower.shader.ShaderFlag",
+    ""
+  ],
+  [
+    "flower.shader.Programmer",
+    ""
+  ],
+  [
+    "flower.shader.ProgrammerManager",
+    ""
+  ],
+  [
     "flower.texture.Texture2D",
     ""
   ],
@@ -292,7 +308,7 @@
     "flower.display.Bitmap"
   ],
   [
-    "flower.ui.ItemRender",
+    "flower.ui.ItemRenderer",
     "flower.ui.Group"
   ],
   [
@@ -373,6 +389,10 @@
   ],
   [
     "flower.utils.XMLNameSpace",
+    ""
+  ],
+  [
+    "flower.utils.Path",
     ""
   ],
   [

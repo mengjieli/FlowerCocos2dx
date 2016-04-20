@@ -13,7 +13,7 @@ module flower {
         }
 
         private setSource(val:string|ResItem|flower.Texture2D) {
-            if(val == "" || val == null) {
+            if (val == "" || val == null) {
                 this.texture = null;
                 return;
             }
@@ -31,15 +31,19 @@ module flower {
                     url = (<ResItem>val).url;
                 }
                 var arr = url.split("#");
-                if (arr.length > 2) {
-                    var name:string = arr[0];
-                    var url:string;
-                    if (typeof (val) == "string") {
-                        url = val = (<string>val).slice(name.length + 1, (<string>val).length);
+                if (arr.length == 2 || arr.length == 3) {
+                    var pluginName;
+                    var fileEnd;
+                    if (arr.length == 3) {
+                        pluginName = arr[2];
                     } else {
-                        url = (<ResItem>val).url = (<ResItem>val).url.slice(name.length + 1, (<ResItem>val).url.length);
+                        fileEnd = Path.getFileEnd(arr[0]);
                     }
-                    var plugin = ImagePlugin.getPlugin(name);
+                    var plugin = ImagePlugin.getPlugin(fileEnd, pluginName);
+                    if (plugin == null) {
+                        flower.DebugInfo.debug("没有找到 Image 对应的插件:" + url, flower.DebugInfo.ERROR);
+                    }
+                    url = arr[0] + "#" + arr[1];
                     var texture = plugin.getTextrure(url);
                     if (texture) {
                         this.texture = texture;
@@ -94,12 +98,13 @@ module flower {
         }
 
         public get offX():number {
-            return this.texture?this.texture.offX:0;
+            return this.texture ? this.texture.offX : 0;
         }
 
         public get offY():number {
-            return this.texture?this.texture.offY:0;
+            return this.texture ? this.texture.offY : 0;
         }
+
         //////////////////////////////////interface//////////////////////////////////
         private _binds;
         public eventThis;

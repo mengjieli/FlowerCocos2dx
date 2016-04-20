@@ -8,6 +8,7 @@ module test {
             super();
             this.percentWidth = 100;
             this.percentHeight = 100;
+
             this.load();
             test.DebugServer.socket.register(3005, this.receiveFileChange, this);
         }

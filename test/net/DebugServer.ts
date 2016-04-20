@@ -5,7 +5,7 @@ module test {
 
         public constructor() {
             var socket = DebugServer.socket;
-            socket.connect("localhost", 16501);
+            socket.connect("192.168.0.112", 16501);
             socket.addListener(flower.Event.CONNECT, this.onConnect, this);
         }
 

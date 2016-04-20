@@ -27,6 +27,7 @@ module flower {
 		dispatch(event:flower.Event);
 		dispatchWidth(type:string,data?:any);
 		dispose();
+		$addFlag(pos:number);
 		$getFlag(pos:number):boolean;
 	}
 }

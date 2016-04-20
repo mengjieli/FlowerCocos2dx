@@ -78,5 +78,5 @@ module ImagePlugin {
         }
     }
 
-    flower.ImagePlugin.registerPlugin("PLIST", PlistMananger.getInstance());
+    flower.ImagePlugin.registerPlugin("PLIST",["plist"], PlistMananger.getInstance());
 }

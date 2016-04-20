@@ -340,7 +340,7 @@ class System {
         "texture": {
             "exe": function (nativeShow, nativeTexture, resource, rotation) {
                 nativeShow.initWithTexture(nativeTexture);
-                if(resource) {
+                if (resource) {
                     nativeShow.setTextureRect(resource, rotation, {width: resource.width, height: resource.height});
                 }
             }

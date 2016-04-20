@@ -81,16 +81,16 @@ module flower {
                         //trace("quit", timeGap);
                         break;
                     }
-                    if(disX < -600) {
+                    if (disX < -600) {
                         disX = -600;
                     }
-                    if(disX > 600) {
+                    if (disX > 600) {
                         disX = 600;
                     }
-                    if(disY < -600) {
+                    if (disY < -600) {
                         disY = -600;
                     }
-                    if(disY > 600) {
+                    if (disY > 600) {
                         disY = 600;
                     }
                     var toX = this._viewport.x + disX * 5;

@@ -28,7 +28,7 @@ module test {
         }
     }
 
-    export class LabelItem extends flower.ItemRender {
+    export class LabelItem extends flower.ItemRenderer {
         private label:flower.Label;
 
         public constructor() {

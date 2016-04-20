@@ -2,7 +2,7 @@ module flower {
     export class DataGroup extends flower.Group implements IViewPort {
 
         private _data:flower.ArrayValue;
-        private _itemRender:any;
+        private _itemRenderer:any;
         private _items:Array<any>;
         private _viewer:flower.DisplayObject;
         private _viewWidth:number;
@@ -32,7 +32,7 @@ module flower {
                     this.$addFlag(0x400);
                 }
             }
-            if (this._data && this._data.length && this._itemRender && (this.$getFlag(0x400))) {
+            if (this._data && this._data.length && this._itemRenderer && (this.$getFlag(0x400))) {
                 if (!this._items) {
                     this._items = [];
                 }
@@ -53,7 +53,7 @@ module flower {
                             }
                         }
                         if (item == null) {
-                            item = new this._itemRender(itemData);
+                            item = new this._itemRenderer(itemData);
                             item.data = itemData;
                         }
                         if (item.parent == this) {
@@ -68,7 +68,7 @@ module flower {
                     var elementWidth:number;
                     var elementHeight:number;
                     if (!this._items.length) {
-                        item = new this._itemRender(list.getItemAt(0));
+                        item = new this._itemRenderer(list.getItemAt(0));
                         item.data = list.getItemAt(0);
                         this._items.push(item);
                     }
@@ -87,7 +87,7 @@ module flower {
                             }
                         }
                         if (!item) {
-                            item = new this._itemRender(itemData);
+                            item = new this._itemRenderer(itemData);
                             item.data = itemData;
                         }
                         if (item.parent == this) {
@@ -149,17 +149,17 @@ module flower {
             }
         }
 
-        public get itemRender():any {
-            return this._itemRender;
+        public get itemRenderer():any {
+            return this._itemRenderer;
         }
 
-        public set itemRender(val:any) {
-            if (this._itemRender == val) {
+        public set itemRenderer(val:any) {
+            if (this._itemRenderer == val) {
                 return;
             }
             this.removeAll();
             this._items = null;
-            this._itemRender = val;
+            this._itemRenderer = val;
             this.$addFlag(0x400);
         }
 

@@ -17,7 +17,7 @@ module flower {
 			this._root[name] = this[name];
 		}
 
-		public addDataDeinf(config:any):any
+		public addDefine(config:any):any
 		{
 			this._defines[config.name] = config;
 		}

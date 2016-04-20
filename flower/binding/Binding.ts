@@ -106,7 +106,7 @@ module flower {
 				for(var i:number = 0;i < this.stmts.length; i++)
 				{
 					var expr:any = this.stmts[i];
-					if(expr instanceof flower.Expr)
+					if(expr instanceof flower.Stmts)
 					{
 						try 
 						{

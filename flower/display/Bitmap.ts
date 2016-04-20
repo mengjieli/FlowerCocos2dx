@@ -1,14 +1,30 @@
 module flower {
     export class Bitmap extends flower.DisplayObject {
+
         public static bitmapProperty:any = System.Bitmap;
 
         private _texture:flower.Texture2D;
+        private _scale9Grid:flower.Rectangle;
+        private _program:Programmer;
+        private _shaderFlag:number = 0;
 
         public constructor(texture:flower.Texture2D = null) {
             super();
             this._show = System.getNativeShow("Bitmap");
             this.texture = texture;
             this._nativeClass = "Bitmap";
+        }
+
+        public $addShaderFlag(pos:number) {
+            this._shaderFlag |= pos;
+        }
+
+        public $removeShaderFlag(pos:number) {
+            this._shaderFlag &= ~pos;
+        }
+
+        public $getShaderFlag(pos:number):boolean {
+            return this._shaderFlag & pos ? true : false;
         }
 
         public _setTexture(val:flower.Texture2D) {
@@ -18,6 +34,10 @@ module flower {
             this._texture = val;
             var p:any = flower.Bitmap.bitmapProperty.texture;
             if (val) {
+                if (this._width || this._height) {
+                    this.scaleX *= this._width / this.texture.width;
+                    this.scaleY *= this._height / this.texture.height;
+                }
                 this._width = this._texture.width;
                 this._height = this._texture.height;
                 this._texture.$addCount();
@@ -27,6 +47,7 @@ module flower {
                 }
                 this._setX(this.x);
                 this._setY(this.y);
+                this.$addFlag(DisplayObjectFlag.BITMAP_SHADER_CHANGE);
             }
             else {
                 this._width = 0;
@@ -55,11 +76,50 @@ module flower {
         }
 
         public _setWidth(val:number) {
-            this.scaleX = val / this._width;
+            if (this._texture) {
+                this.scaleX = val / this._texture.width;
+            } else {
+                this._width = val;
+            }
         }
 
         public _setHeight(val:number) {
-            this.scaleY = val / this._height;
+            if (this._texture) {
+                this.scaleY = val / this._height;
+            } else {
+                this._height = val;
+            }
+        }
+
+        public _setScale9Grid(val:flower.Rectangle) {
+            var scale9 = this._scale9Grid;
+            this._scale9Grid = val;
+            this.$addFlag(DisplayObjectFlag.BITMAP_SHADER_CHANGE);
+            if (this._scale9Grid) {
+                this.$addShaderFlag(ShaderFlag.SCALE_9_GRID);
+            } else {
+                this.$removeShaderFlag(ShaderFlag.SCALE_9_GRID);
+            }
+        }
+
+        public $onFrameEnd() {
+            if (this._texture && this.$getFlag(DisplayObjectFlag.BITMAP_SHADER_CHANGE)) {
+                if (this._shaderFlag == 0 && this._program && this._program != Programmer.instance) {
+                    this._program = Programmer.instance;
+                    this._show.setGLProgramState(this._program.nativeProgrammer);
+                } else if (this._shaderFlag && (!this._program || this._program == Programmer.instance)) {
+                    this._program = ProgrammerManager.getInstance().createProgrammer();
+                    this._show.setGLProgramState(this._program.nativeProgrammer);
+                }
+                if (this._shaderFlag && this._program) {
+                    this._program.setShaderFlag(this._shaderFlag);
+                    if (this.$getShaderFlag(ShaderFlag.SCALE_9_GRID)) {
+                        this._program.setScale9GridUniforms(this._texture.width, this._texture.height, this._scale9Grid, this.scaleX * this._width, this.scaleY * this._height);
+                        this.$removeShaderFlag(ShaderFlag.SCALE_9_GRID);
+                    }
+                }
+                this.$removeFlag(DisplayObjectFlag.BITMAP_SHADER_CHANGE);
+            }
         }
 
         public set texture(val:flower.Texture2D) {
@@ -73,6 +133,17 @@ module flower {
             return this._texture;
         }
 
+        public get scale9Grid():flower.Rectangle {
+            return this._scale9Grid;
+        }
+
+        public set scale9Grid(val:flower.Rectangle) {
+            if (this._scale9Grid == val) {
+                return;
+            }
+            this._setScale9Grid(val);
+        }
+
         public dispose() {
             var show:any = this._show;
             super.dispose();
@@ -81,4 +152,3 @@ module flower {
         }
     }
 }
-

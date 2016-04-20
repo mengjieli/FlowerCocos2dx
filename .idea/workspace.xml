@@ -48,9 +48,9 @@
         <entry file="file://$PROJECT_DIR$/flower/ui/Label.ts">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="65" column="9" selection-start-line="65" selection-start-column="9" selection-end-line="65" selection-end-column="9" />
+              <caret line="66" column="5" selection-start-line="66" selection-start-column="5" selection-end-line="66" selection-end-column="5" />
               <folding>
-                <marker date="1460788040000" expanded="true" signature="14:1733" placeholder="..." />
+                <marker date="1460971801000" expanded="true" signature="14:1778" placeholder="..." />
               </folding>
             </state>
           </provider>
@@ -70,7 +70,7 @@
         <entry file="file://$PROJECT_DIR$/flower/ui/UIParser.ts">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="-77.25926">
-              <caret line="457" column="28" selection-start-line="457" selection-start-column="28" selection-end-line="457" selection-end-column="28" />
+              <caret line="455" column="28" selection-start-line="455" selection-start-column="28" selection-end-line="455" selection-end-column="28" />
               <folding />
             </state>
           </provider>
@@ -80,7 +80,7 @@
         <entry file="file://$PROJECT_DIR$/flower/ui/supportClasses/Component.ts">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.375">
-              <caret line="61" column="25" selection-start-line="61" selection-start-column="14" selection-end-line="61" selection-end-column="25" />
+              <caret line="61" column="21" selection-start-line="61" selection-start-column="21" selection-end-line="61" selection-end-column="21" />
               <folding>
                 <marker date="1460795041000" expanded="true" signature="14:22766" placeholder="..." />
               </folding>
@@ -92,7 +92,7 @@
         <entry file="file://$PROJECT_DIR$/flower/ui/DataGroup.ts">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="-5.5555553">
-              <caret line="10" column="38" selection-start-line="10" selection-start-column="38" selection-end-line="10" selection-end-column="38" />
+              <caret line="11" column="0" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -102,7 +102,7 @@
         <entry file="file://$PROJECT_DIR$/system/System.ts">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="-8.777778">
-              <caret line="339" column="44" selection-start-line="339" selection-start-column="29" selection-end-line="339" selection-end-column="44" />
+              <caret line="346" column="9" selection-start-line="346" selection-start-column="9" selection-end-line="346" selection-end-column="9" />
               <folding />
             </state>
           </provider>
@@ -111,8 +111,8 @@
       <file leaf-file-name="Bitmap.ts" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/flower/display/Bitmap.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-11.666667">
-              <caret line="23" column="89" selection-start-line="23" selection-start-column="89" selection-end-line="26" selection-end-column="21" />
+            <state vertical-scroll-proportion="-12.222222">
+              <caret line="24" column="49" selection-start-line="24" selection-start-column="49" selection-end-line="24" selection-end-column="49" />
               <folding />
             </state>
           </provider>
@@ -306,7 +306,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1440" height="806" extended-state="6" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32913166" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -367,7 +367,7 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="65" column="9" selection-start-line="65" selection-start-column="9" selection-end-line="65" selection-end-column="9" />
           <folding>
-            <marker date="1460788040000" expanded="true" signature="14:1733" placeholder="..." />
+            <marker date="1460971801000" expanded="true" signature="14:1778" placeholder="..." />
           </folding>
         </state>
       </provider>
@@ -413,9 +413,9 @@
     <entry file="file://$PROJECT_DIR$/flower/ui/Label.ts">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="65" column="9" selection-start-line="65" selection-start-column="9" selection-end-line="65" selection-end-column="9" />
+          <caret line="66" column="5" selection-start-line="66" selection-start-column="5" selection-end-line="66" selection-end-column="5" />
           <folding>
-            <marker date="1460788040000" expanded="true" signature="14:1733" placeholder="..." />
+            <marker date="1460971801000" expanded="true" signature="14:1778" placeholder="..." />
           </folding>
         </state>
       </provider>
@@ -431,7 +431,7 @@
     <entry file="file://$PROJECT_DIR$/flower/ui/UIParser.ts">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-77.25926">
-          <caret line="457" column="28" selection-start-line="457" selection-start-column="28" selection-end-line="457" selection-end-column="28" />
+          <caret line="455" column="28" selection-start-line="455" selection-start-column="28" selection-end-line="455" selection-end-column="28" />
           <folding />
         </state>
       </provider>
@@ -439,7 +439,7 @@
     <entry file="file://$PROJECT_DIR$/flower/ui/DataGroup.ts">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-5.5555553">
-          <caret line="10" column="38" selection-start-line="10" selection-start-column="38" selection-end-line="10" selection-end-column="38" />
+          <caret line="11" column="0" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -447,15 +447,15 @@
     <entry file="file://$PROJECT_DIR$/system/System.ts">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-8.777778">
-          <caret line="339" column="44" selection-start-line="339" selection-start-column="29" selection-end-line="339" selection-end-column="44" />
+          <caret line="346" column="9" selection-start-line="346" selection-start-column="9" selection-end-line="346" selection-end-column="9" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/flower/display/Bitmap.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-11.666667">
-          <caret line="23" column="89" selection-start-line="23" selection-start-column="89" selection-end-line="26" selection-end-column="21" />
+        <state vertical-scroll-proportion="-12.222222">
+          <caret line="24" column="49" selection-start-line="24" selection-start-column="49" selection-end-line="24" selection-end-column="49" />
           <folding />
         </state>
       </provider>
@@ -471,7 +471,7 @@
     <entry file="file://$PROJECT_DIR$/flower/ui/supportClasses/Component.ts">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.375">
-          <caret line="61" column="25" selection-start-line="61" selection-start-column="14" selection-end-line="61" selection-end-column="25" />
+          <caret line="61" column="21" selection-start-line="61" selection-start-column="21" selection-end-line="61" selection-end-column="21" />
           <folding>
             <marker date="1460795041000" expanded="true" signature="14:22766" placeholder="..." />
           </folding>
