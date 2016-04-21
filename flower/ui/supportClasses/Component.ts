@@ -60,7 +60,7 @@ module flower {
                 }
             }
             p.addUIEvents = function () {
-                this.addListener(flower.Event.ADDED, this.onEXEAdded, this);
+                this.addListener(flower.Event.ADDED_TO_STAGE, this.onEXEAdded, this);
             }
             Object.defineProperty(p, "eventThis", {
                 get: function () {
@@ -72,7 +72,7 @@ module flower {
                 enumerable: true,
                 configurable: true
             });
-            Object.defineProperty(p, "onAdded", {
+            Object.defineProperty(p, "onAddedToStage", {
                 get: function () {
                     return this.onAddedEXE;
                 },
@@ -317,7 +317,9 @@ module flower {
                     return this._horizontalCenter;
                 },
                 set: function (val) {
+                    val = +val & ~0;
                     this._horizontalCenter = val;
+                    this.horizontalCenterAlgin = "center";
                     this.$addFlag(0x200);
                 },
                 enumerable: true,
@@ -341,7 +343,9 @@ module flower {
                     return this._verticalCenter;
                 },
                 set: function (val) {
+                    val = +val & ~0;
                     this._verticalCenter = val;
+                    this.verticalCenterAlgin = "center";
                     this.$addFlag(0x200);
                 },
                 enumerable: true,

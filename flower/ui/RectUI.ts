@@ -9,6 +9,11 @@ module flower {
             flower.Component.init(this);
         }
 
+        protected _setFillColor(val:number) {
+            super._setFillColor(val);
+            this.$addFlag(1);
+        }
+
         public get lineWidth():number {
             return 0;
         }

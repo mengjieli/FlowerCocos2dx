@@ -48,6 +48,10 @@ module flower {
                 this._setX(this.x);
                 this._setY(this.y);
                 this.$addFlag(DisplayObjectFlag.BITMAP_SHADER_CHANGE);
+                this.$addShaderFlag(ShaderFlag.TEXTURE_CHANGE);
+                if(this._scale9Grid) {
+                    this.$addShaderFlag(ShaderFlag.SCALE_9_GRID);
+                }
             }
             else {
                 this._width = 0;
@@ -104,14 +108,16 @@ module flower {
 
         public $onFrameEnd() {
             if (this._texture && this.$getFlag(DisplayObjectFlag.BITMAP_SHADER_CHANGE)) {
-                if (this._shaderFlag == 0 && this._program && this._program != Programmer.instance) {
+                if (this._shaderFlag  <= 1 && this._program && this._program != Programmer.instance) {
                     this._program = Programmer.instance;
-                    this._show.setGLProgramState(this._program.nativeProgrammer);
-                } else if (this._shaderFlag && (!this._program || this._program == Programmer.instance)) {
+                } else if (this._shaderFlag > 1 && (!this._program || this._program == Programmer.instance)) {
                     this._program = ProgrammerManager.getInstance().createProgrammer();
+                }
+                if (this._program && this.$getShaderFlag(ShaderFlag.TEXTURE_CHANGE)) {
                     this._show.setGLProgramState(this._program.nativeProgrammer);
                 }
-                if (this._shaderFlag && this._program) {
+                this.$removeShaderFlag(ShaderFlag.TEXTURE_CHANGE);
+                if (this._shaderFlag) {
                     this._program.setShaderFlag(this._shaderFlag);
                     if (this.$getShaderFlag(ShaderFlag.SCALE_9_GRID)) {
                         this._program.setScale9GridUniforms(this._texture.width, this._texture.height, this._scale9Grid, this.scaleX * this._width, this.scaleY * this._height);
@@ -145,6 +151,9 @@ module flower {
         }
 
         public dispose() {
+            if(this._program && this._program != Programmer.instance) {
+                this._show.setGLProgramState(Programmer.instance.nativeProgrammer);
+            }
             var show:any = this._show;
             super.dispose();
             this.texture = null;

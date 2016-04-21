@@ -222,6 +222,9 @@ class System {
                     return;
                 }
                 System.isLoading = true;
+                if(flower.Engine.TIP) {
+                    flower.DebugInfo.debug("[loadText] " + url,flower.DebugInfo.TIP);
+                }
                 if (url.slice(0, "http://".length) == "http://") {
                     var xhr = cc.loader.getXMLHttpRequest();
                     xhr.open("GET", url, true);
@@ -254,6 +257,9 @@ class System {
                     return;
                 }
                 System.isLoading = true;
+                if(flower.Engine.TIP) {
+                    flower.DebugInfo.debug("[loadTexture] " + url,flower.DebugInfo.TIP);
+                }
                 cc.loader.loadImg(url, {isCrossOrigin: true}, function (err, img) {
                     if (err) {
                         errorBack.call(thisObj);

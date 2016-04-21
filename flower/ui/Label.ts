@@ -1,11 +1,18 @@
 module flower {
     export class Label extends flower.TextField implements flower.UIComponent {
 
+        public static theme = {
+
+        }
+
         private _updateFlag:boolean = true;
 
         public constructor() {
             super();
             flower.Component.init(this);
+            for(var key in Label.theme) {
+                this[key] = Label.theme[key];
+            }
         }
 
         public _setNativeText() {

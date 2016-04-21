@@ -292,6 +292,10 @@
     ""
   ],
   [
+    "flower.ui.theme.Theme",
+    "flower.events.EventDispatcher"
+  ],
+  [
     "flower.ui.Button",
     "flower.ui.Group"
   ],
@@ -329,7 +333,7 @@
   ],
   [
     "flower.ui.UIParser",
-    ""
+    "flower.ui.Group"
   ],
   [
     "flower.ui.UIComponent",
@@ -413,6 +417,10 @@
   ],
   [
     "test.ui.TestUpdateUI",
+    "flower.ui.Group"
+  ],
+  [
+    "test.ui.TestTheme",
     "flower.ui.Group"
   ],
   [

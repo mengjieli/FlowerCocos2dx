@@ -6,6 +6,7 @@ module flower {
         private _linkLoader:flower.URLLoader;
         private _links:Array<any>;
         private _type:string;
+        private _selfDispose = false;
 
         public constructor(res:string|flower.ResItem) {
             super();
@@ -145,11 +146,15 @@ module flower {
             this._links = null;
             this._isLoading = false;
             if (!this._res || !this._data) {
+                this._selfDispose = true;
                 this.dispose();
+                this._selfDispose = false;
                 return;
             }
             this.dispatchWidth(flower.Event.COMPLETE, this._data);
+            this._selfDispose = true;
             this.dispose();
+            this._selfDispose = false;
         }
 
         private loadError() {
@@ -162,6 +167,10 @@ module flower {
         }
 
         public dispose() {
+            if(!this._selfDispose) {
+                super.dispose();
+                return;
+            }
             if (this._data && this._type == flower.ResType.TEXTURE) {
                 this._data.$delCount();
                 this._data = null;

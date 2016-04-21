@@ -4,7 +4,8 @@ module test {
         public constructor() {
             super();
 
-            flower.Engine.getInstance().addChild(new test.TestUpdateUI());
+            flower.Engine.getInstance().addChild(new test.TestTheme());
+            //flower.Engine.getInstance().addChild(new test.TestUpdateUI());
             flower.UIParser.registerLocalUIClass("test.LabelItem", test.LabelItem);
             //this.addChild(new test.TestUpdateUI());
             //this.addChild(new test.TestLayout());

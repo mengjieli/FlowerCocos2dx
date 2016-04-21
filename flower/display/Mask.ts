@@ -53,6 +53,47 @@ module flower {
             }
         }
 
+
+        public $onAddToStage(stage:flower.Stage, nestLevel:number) {
+            super.$onAddToStage(stage, nestLevel);
+            if (this.$stageFlag == true) {
+                return;
+            }
+            var childs = this._childs;
+            var flag = true;
+            while (flag) {
+                flag = false;
+                var len:number = childs.length;
+                for (var i:number = len - 1; i >= 0; i--) {
+                    var child = childs[i];
+                    if (!child.stage) {
+                        child.$onAddToStage(this.stage, this._nestLevel + 1);
+                        flag = true;
+                    }
+                }
+            }
+        }
+
+        public $onRemoveFromStage() {
+            super.$onRemoveFromStage();
+            if (this.$stageFlag == true) {
+                return;
+            }
+            var childs = this._childs;
+            var flag = true;
+            while (flag) {
+                flag = false;
+                var len:number = childs.length;
+                for (var i:number = len - 1; i >= 0; i--) {
+                    var child = childs[i];
+                    if (child.stage) {
+                        child.$onRemoveFromStage();
+                        flag = true;
+                    }
+                }
+            }
+        }
+
         public _getMouseTarget(matrix:flower.Matrix, mutiply:boolean):flower.DisplayObject {
             return null;
         }
@@ -93,6 +134,7 @@ module flower {
             return false;
         }
 
+        private _childs;
         public mesureWidth:number;
         public mesureHeight:number;
         public numChildren:number;

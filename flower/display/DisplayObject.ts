@@ -10,7 +10,7 @@ module flower {
         public _visible:boolean = true;
         public _touchEnabled:boolean = true;
         public _mutiplyTouchEnabled:boolean = true;
-        public _parent:flower.Sprite;
+        public _parent:flower.Sprite|Mask;
         public _touchX:number = 0;
         public _touchY:number = 0;
         public _DisplayObject:any;
@@ -64,16 +64,35 @@ module flower {
             }
         }
 
+        public $stageFlag = false;
         public $onAddToStage(stage:flower.Stage, nestLevel:number) {
-            this._stage = stage;
-            this._nestLevel = nestLevel;
-            this.dispatchWidth(flower.Event.ADDED_TO_STAGE);
+            if(this.$stageFlag) {
+                return;
+            }
+            if (stage == null) {
+                this._stage = null;
+                this._nestLevel = null;
+            } else {
+                if (this._stage == null) {
+                    this._stage = stage;
+                    this._nestLevel = nestLevel;
+                    this.dispatchWidth(flower.Event.ADDED_TO_STAGE);
+                } else {
+                    this._stage = stage;
+                    this._nestLevel = nestLevel;
+                }
+            }
         }
 
         public $onRemoveFromStage() {
-            this._stage = null;
-            this._nestLevel = 0;
-            this.dispatchWidth(flower.Event.REMOVED_FROM_STAGE);
+            if(this.$stageFlag) {
+                return;
+            }
+            if (this._stage) {
+                this._stage = null;
+                this._nestLevel = 0;
+                this.dispatchWidth(flower.Event.REMOVED_FROM_STAGE);
+            }
         }
 
         public _setX(val:number, offX:number = 0) {

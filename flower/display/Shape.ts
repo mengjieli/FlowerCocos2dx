@@ -20,6 +20,10 @@ module flower {
             this._nativeClass = "Shape";
         }
 
+        protected _setFillColor(val:number) {
+            this._fillColor = val;
+        }
+
         public get fillColor():number {
             return this._fillColor;
         }
@@ -29,7 +33,7 @@ module flower {
             if (val == this._fillColor) {
                 return;
             }
-            this._fillColor = val;
+            this._setFillColor(val);
         }
 
         public get fillAlpha():number {

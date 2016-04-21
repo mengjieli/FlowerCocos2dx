@@ -53,6 +53,15 @@ module flower {
 			return null;
 		}
 
+		public getElement(name:string):flower.XMLElement {
+			for(var i = 0; i < this.list.length; i++) {
+				if(this.list[i].name == name) {
+					return this.list[i];
+				}
+			}
+			return null;
+		}
+
 		public getElements(atrName:string):Array<flower.XMLElement> {
 			var res:Array<flower.XMLElement> = [];
 			for(var i = 0; i < this.list.length; i++) {

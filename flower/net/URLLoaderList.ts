@@ -1,5 +1,6 @@
 module flower {
 	export class URLLoaderList extends flower.EventDispatcher {
+
 		private list:Array<any>;
 		private dataList:Array<any>;
 		private index:number;
@@ -20,6 +21,7 @@ module flower {
 				this.dispatchWidth(flower.Event.COMPLETE,this.dataList);
 				this.list = null;
 				this.dataList = null;
+				this.dispose();
 				return ;
 			}
 			var item:any = this.list[this.index];
@@ -33,7 +35,6 @@ module flower {
 			this.index++;
 			this.loadNext();
 		}
-
 	}
 }
 

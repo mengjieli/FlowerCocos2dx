@@ -1,5 +1,5 @@
 module flower {
-    export class UIParser extends flower.EventDispatcher {
+    export class UIParser extends flower.Group {
         private static classes = {
             f: {
                 "Object": "Object",
@@ -34,7 +34,6 @@ module flower {
             localContent: {},
             localURL: {}
         };
-        private static id:number = 0;
 
         private _className:string;
         private classes:any;
@@ -43,6 +42,7 @@ module flower {
         private loadContent:XMLElement;
         private loadData:any;
         private rootXML:XMLElement;
+        private hasInitFunction;
 
         public constructor() {
             super();
@@ -107,7 +107,11 @@ module flower {
                 this.relationIndex++;
             }
             if (this.relationIndex >= this.relationUI.length) {
-                this.dispatchWidth(Event.COMPLETE, this.parseUIAsyncFlag ? this.parseUI(this.loadContent, this.loadData) : this.parse(this.loadContent));
+                if (this.parseUIAsyncFlag) {
+                    this.dispatchWidth(Event.COMPLETE, this.parseUI(this.loadContent, this.loadData));
+                } else {
+                    this.dispatchWidth(Event.COMPLETE, this.parse(this.loadContent));
+                }
             } else {
                 var parser = new UIParser();
                 parser.parseAsync(this.relationUI[this.relationIndex]);
@@ -132,7 +136,9 @@ module flower {
             if (data) {
                 return new UIClass(data);
             }
-            return new UIClass();
+            var ui = new UIClass();
+            this.addChild(ui);
+            return ui;
         }
 
         public parse(content:any):string {
@@ -219,10 +225,14 @@ module flower {
             var scriptInfo = {
                 content: ""
             };
+            this.hasInitFunction = false;
             content += this.decodeScripts(before, className, xml.getElements("f:script"), scriptInfo);
-            content += before + "\t\tthis.$initMain(this);\n";
+            content += before + "\t\tthis." + className + "_initMain(this);\n";
             var propertyList = [];
-            this.decodeObject(before + "\t", className, "$initMain", false, xml, hasLocalNS, propertyList, {});
+            this.decodeObject(before + "\t", className, className + "_initMain", false, xml, hasLocalNS, propertyList, {});
+            if (this.hasInitFunction) {
+                content += before + "\t\tthis." + className + "_init();\n";
+            }
             content += before + "\t}\n\n";
             content += propertyList[propertyList.length - 1];
             for (var i = 0; i < propertyList.length - 1; i++) {
@@ -230,7 +240,11 @@ module flower {
             }
             content += scriptInfo.content;
             content += before + "\treturn " + className + ";\n";
-            content += before + "})(" + extendClass + ");\n";
+            if (uinameNS == "f") {
+                content += before + "})(" + extendClass + ");\n";
+            } else {
+                content += before + "})(flower.UIParser.getLocalUIClass(\"" + extendClass + "\"));\n";
+            }
             before = "";
             var classEnd = "";
             for (var i = 0; i < packages.length; i++) {
@@ -258,7 +272,7 @@ module flower {
                 eval(content);
             }
             flower.UIParser.setLocalUIClassContent(allClassName, classContent);
-            //trace("解析类:\n", content);
+            trace("解析类:\n", content);
             return allClassName;
         }
 
@@ -269,10 +283,31 @@ module flower {
                     var item = scripts[i].list[s];
                     var childName:string = item.name;
                     childName = childName.split(":")[1];
-                    if (item.value == null || item.value == "") {
+                    if (item.list.length && item.getElement("f:set") || item.getElement("f:get")) {
+                        var setFunction = item.getElement("f:set");
+                        var getFunction = item.getElement("f:get");
+                        script.content +=  before + "\tObject.defineProperty(" + className + ".prototype, \"" + childName + "\", {\n";
+                        if(getFunction) {
+                            script.content += "\t\tget: function () {\n"
+                            script.content += "\t\t\t" + getFunction.value + "\n";
+                            script.content += "\t\t},\n";
+                        }
+                        if(setFunction) {
+                            script.content += "\t\tset: function (val) {\n";
+                            script.content += "\t\t\t" + setFunction.value + "\n";
+                            script.content += "\t\t},\n";
+                        }
+                        script.content += "\t\tenumerable: true,\n"
+                        script.content += "\t\tconfigurable: true\n";
+                        script.content += "\t\t});\n\n";
+                    } else if (item.value == null || item.value == "") {
                         var initValue = item.getAttribute("init");
                         content += before + "\t\tthis." + childName + " = " + (initValue == null ? "null" : initValue.value) + ";\n";
                     } else {
+                        if (childName == "init") {
+                            childName = className + "_" + childName;
+                            this.hasInitFunction = true;
+                        }
                         script.content += before + "\t" + className + ".prototype." + childName + " = function(";
                         var params = item.getAttribute("params");
                         if (params) {
@@ -313,6 +348,7 @@ module flower {
             var idAtr:XMLAttribute = xml.getAttribute("id");
             if (idAtr) {
                 setObject += before + "\tthis." + idAtr.value + " = " + thisObj + ";\n";
+                setObject += before + "\tthis." + idAtr.value + ".name = \"" + idAtr.value + "\";\n";
             }
             for (var i:number = 0; i < xml.attributes.length; i++) {
                 var atrName:string = xml.attributes[i].name;
@@ -391,12 +427,12 @@ module flower {
                             }
                             setObject += before + "\t" + thisObj + "." + childName + " = flower.UIParser.getLocalUIClass(\"" + (new UIParser()).parse(item) + "\");\n";
                         } else {
-                            funcName = "$get" + itemClassName;
+                            funcName = className + "_get" + itemClassName;
                             setObject += before + "\t" + thisObj + "." + childName + " = this." + funcName + "(" + thisObj + ");\n";
                             this.decodeObject(before, className, funcName, true, item, hasLocalNS, propertyFunc, nameIndex);
                         }
                     } else {
-                        funcName = "$get" + itemClassName;
+                        funcName = className + "_get" + itemClassName;
                         setObject += before + "\t" + thisObj + ".addChild(this." + funcName + "(" + thisObj + "));\n";
                         this.decodeObject(before, className, funcName, true, item, hasLocalNS, propertyFunc, nameIndex);
                     }

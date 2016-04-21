@@ -39,6 +39,7 @@ module test {
                         if (this.panel) {
                             this.panel.dispose();
                         }
+                        trace("reload");
                         this.panel = (new flower.UIParser()).parseUI(content);
                         this.addChild(this.panel);
                         this.content = content;

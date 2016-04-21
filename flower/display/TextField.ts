@@ -7,8 +7,8 @@ module flower {
             super();
             this._TextField = {0: 12, 1: 0, 2: "", 3: 0, 4: 0, 5: false, 6: true, 7: true};
             this._show = System.getNativeShow("TextField");
-            this.width = 100;
-            this.height = 100;
+            //this.width = 100;
+            //this.height = 100;
             this._setSize(this._TextField[0]);
             this._setColor(this._TextField[1]);
             this._nativeClass = "TextField";
