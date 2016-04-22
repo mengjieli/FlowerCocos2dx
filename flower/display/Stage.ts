@@ -20,7 +20,16 @@ module flower {
         private touchList:Array<any> = [];
 
         public onMouseDown(id:number, x:number, y:number) {
-            var mouse:any = {id: 0, mutiply: false, startX: 0, startY: 0, moveX: 0, moveY: 0, target: null};
+            var mouse:any = {
+                id: 0,
+                mutiply: false,
+                startX: 0,
+                startY: 0,
+                moveX: 0,
+                moveY: 0,
+                target: null,
+                parents: []
+            };
             mouse.id = id;
             mouse.startX = x;
             mouse.startY = y;
@@ -28,7 +37,12 @@ module flower {
             this.touchList.push(mouse);
             var target:flower.DisplayObject = this.getMouseTarget(x, y, mouse.mutiply);
             mouse.target = target;
-            target.addListener(flower.Event.REMOVED, this.onMouseTargetRemove, this);
+            var parent = target.parent;
+            while (parent && parent != this) {
+                mouse.parents.push(parent);
+                parent = parent.parent;
+            }
+            //target.addListener(flower.Event.REMOVED, this.onMouseTargetRemove, this);
             if (target) {
                 var event:flower.TouchEvent = new flower.TouchEvent(flower.TouchEvent.TOUCH_BEGIN);
                 event.stageX = x;
@@ -48,11 +62,20 @@ module flower {
                     break;
                 }
             }
-            if (mouse == null)
+            if (mouse == null) {
                 return;
-            if (mouse.moveX == x && mouse.moveY == y)
+            }
+            if (mouse.moveX == x && mouse.moveY == y) {
                 return;
-            var target:flower.DisplayObject = this.getMouseTarget(x, y, mouse.mutiply);
+            }
+            while (mouse.target.stage == null && mouse.parents.length) {
+                mouse.target = mouse.parents.shift();
+            }
+            if(!mouse.target) {
+                mouse.target = this;
+            }
+            this.getMouseTarget(x, y, mouse.mutiply);
+            var target:flower.DisplayObject = mouse.target;//this.getMouseTarget(x, y, mouse.mutiply);
             mouse.moveX = x;
             mouse.moveY = y;
             var event:flower.TouchEvent;
@@ -75,8 +98,15 @@ module flower {
                     break;
                 }
             }
-            if (mouse == null)
+            if (mouse == null) {
                 return;
+            }
+            while (mouse.target.stage == null && mouse.parents.length) {
+                mouse.target = mouse.parents.shift();
+            }
+            if(!mouse.target) {
+                mouse.target = this;
+            }
             var target:flower.DisplayObject = this.getMouseTarget(x, y, mouse.mutiply);
             var event:flower.TouchEvent;
             if (target == mouse.target) {
@@ -97,15 +127,6 @@ module flower {
                 event.touchX = Math.floor(target.touchX);
                 event.touchY = Math.floor(target.touchY);
                 target.dispatch(event);
-            }
-        }
-
-        private onMouseTargetRemove(e:flower.Event) {
-            for (var i:number = 0; i < this.touchList.length; i++) {
-                if (this.touchList[i].target == e.target) {
-                    this.touchList.splice(i, 1)[0];
-                    break;
-                }
             }
         }
 

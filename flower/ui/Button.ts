@@ -1,5 +1,6 @@
 module flower {
     export class Button extends flower.Group {
+
         private _enabled:boolean = true;
 
         public constructor() {
@@ -19,8 +20,9 @@ module flower {
             return target;
         }
 
-        private _onTouch(e:flower.TouchEvent) {
-            if (!this._enabled) {
+        protected _onTouch(e:flower.TouchEvent) {
+            if (!this.enabled) {
+                e.stopPropagation();
                 return;
             }
             switch (e.type) {
@@ -34,10 +36,7 @@ module flower {
             }
         }
 
-        public set enabled(val:boolean) {
-            if (this._enabled == val) {
-                return;
-            }
+        protected _setEnabled(val:boolean) {
             this._enabled = val;
             if (this._enabled) {
                 this.currentState = "up";
@@ -45,6 +44,14 @@ module flower {
             else {
                 this.currentState = "disabled";
             }
+        }
+
+        public set enabled(val:boolean) {
+            val = !!val;
+            if (this._enabled == val) {
+                return;
+            }
+            this._setEnabled(val);
         }
 
         public get enabled():boolean {
@@ -77,7 +84,6 @@ module flower {
                 this.onClickEXE.call(this);
             }
         }
-
     }
 }
 

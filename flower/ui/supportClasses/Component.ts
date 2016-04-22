@@ -317,7 +317,7 @@ module flower {
                     return this._horizontalCenter;
                 },
                 set: function (val) {
-                    val = +val & ~0;
+                    val = +val || 0;
                     this._horizontalCenter = val;
                     this.horizontalCenterAlgin = "center";
                     this.$addFlag(0x200);
@@ -343,7 +343,7 @@ module flower {
                     return this._verticalCenter;
                 },
                 set: function (val) {
-                    val = +val & ~0;
+                    val = +val || 0;
                     this._verticalCenter = val;
                     this.verticalCenterAlgin = "center";
                     this.$addFlag(0x200);

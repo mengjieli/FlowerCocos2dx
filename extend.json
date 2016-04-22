@@ -292,6 +292,10 @@
     ""
   ],
   [
+    "flower.ui.supportClasses.RadioButtonGroup",
+    "flower.ui.Group"
+  ],
+  [
     "flower.ui.theme.Theme",
     "flower.events.EventDispatcher"
   ],
@@ -330,6 +334,30 @@
   [
     "flower.ui.Scroller",
     "flower.ui.MaskUI"
+  ],
+  [
+    "flower.ui.ToggleButton",
+    "flower.ui.Group"
+  ],
+  [
+    "flower.ui.ToggleSwitch",
+    "flower.ui.ToggleButton"
+  ],
+  [
+    "flower.ui.CheckBox",
+    "flower.ui.ToggleButton"
+  ],
+  [
+    "flower.ui.RadioButton",
+    "flower.ui.ToggleButton"
+  ],
+  [
+    "flower.ui.ListBase",
+    "flower.ui.DataGroup"
+  ],
+  [
+    "flower.ui.List",
+    "flower.ui.ListBase"
   ],
   [
     "flower.ui.UIParser",

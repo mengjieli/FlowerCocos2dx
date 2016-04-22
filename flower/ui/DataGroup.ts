@@ -38,7 +38,7 @@ module flower {
                 }
                 var list = this._data;
                 var newItems = [];
-                var item;
+                var item:ItemRenderer;
                 var itemData;
                 var mesureSize:boolean = false;
                 if (!this._viewer || !this.layout || !this.layout.fixElementSize) {
@@ -53,7 +53,7 @@ module flower {
                             }
                         }
                         if (item == null) {
-                            item = new this._itemRenderer(itemData);
+                            item = this.createItem(itemData, i);
                             item.data = itemData;
                         }
                         if (item.parent == this) {
@@ -61,6 +61,7 @@ module flower {
                         } else {
                             this.addChild(item);
                         }
+                        item.$setItemIndex(i);
                         newItems[i] = item;
                     }
                 } else {
@@ -68,14 +69,14 @@ module flower {
                     var elementWidth:number;
                     var elementHeight:number;
                     if (!this._items.length) {
-                        item = new this._itemRenderer(list.getItemAt(0));
+                        item = this.createItem(list.getItemAt(0), 0);
                         item.data = list.getItemAt(0);
                         this._items.push(item);
                     }
                     elementWidth = this._items[0].width;
                     elementHeight = this._items[0].height;
                     var firstItemIndex:number = this.layout.getFirstItemIndex(elementWidth, elementHeight, -this.x, -this.y);
-                    firstItemIndex = firstItemIndex<0?0:firstItemIndex;
+                    firstItemIndex = firstItemIndex < 0 ? 0 : firstItemIndex;
                     for (var i = firstItemIndex; i < list.length; i++) {
                         item = null;
                         itemData = list.getItemAt(i);
@@ -87,7 +88,7 @@ module flower {
                             }
                         }
                         if (!item) {
-                            item = new this._itemRenderer(itemData);
+                            item = this.createItem(itemData, i);
                             item.data = itemData;
                         }
                         if (item.parent == this) {
@@ -95,6 +96,7 @@ module flower {
                         } else {
                             this.addChild(item);
                         }
+                        item.$setItemIndex(i);
                         newItems[i - firstItemIndex] = item;
                         this.layout.updateList(this._viewWidth, this._viewHeight, firstItemIndex);
                         if (this.layout.isElementsOutSize(-this.x, -this.y, this._viewWidth, this._viewHeight)) {
@@ -110,7 +112,6 @@ module flower {
                 this.$removeFlag(0x400);
             }
             super.$onFrameEnd();
-
             if (mesureSize) {
                 if (!this._viewer || !this.layout || !this.layout.fixElementSize) {
                     var size = this.layout.getContentSize();
@@ -118,13 +119,20 @@ module flower {
                     this._contentHeight = size.height;
                     flower.Size.release(size);
                 }
-                else if(this._items.length) {
+                else if (this._items.length) {
                     var size = this.layout.mesureSize(this._items[0].width, this._items[0].height, list.length);
                     this._contentWidth = size.width;
                     this._contentHeight = size.height;
                     flower.Size.release(size);
                 }
             }
+        }
+
+
+        protected createItem(data:any, index:number):ItemRenderer {
+            var item = new this._itemRenderer(data);
+            item.index = index;
+            return item;
         }
 
         public onScroll():void {

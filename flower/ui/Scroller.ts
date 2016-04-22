@@ -25,7 +25,7 @@ module flower {
         }
 
         private touchScroller(e:TouchEvent) {
-            if (!this._viewport || e.target != this) {
+            if (!this._viewport) {
                 return;
             }
             var x = this.touchX;
@@ -62,7 +62,6 @@ module flower {
                 case flower.TouchEvent.TOUCH_END:
                 case flower.TouchEvent.TOUCH_RELEASE:
                     if (!this._scrollTime.length) {
-                        trace("???");
                         break;
                     }
                     var timeGap = Time.currentTime - this._scrollTime[0];
@@ -126,16 +125,10 @@ module flower {
 
         protected resetUIProperty():void {
             super.resetUIProperty();
-            this._viewport.width = this.width;
-            this._viewport.height = this.height;
-        }
-
-        public _getMouseTarget(matrix:flower.Matrix, mutiply:boolean):flower.DisplayObject {
-            var target:flower.DisplayObject = super._getMouseTarget(matrix, mutiply);
-            if (target) {
-                target = this;
+            if(this._viewport) {
+                this._viewport.width = this.width;
+                this._viewport.height = this.height;
             }
-            return target;
         }
 
         public dispose() {

@@ -17,7 +17,7 @@
 		var engine = new flower.Engine();
 		engine.addListener(flower.Event.READY,this.onEngineReady,this);
 		var rect = new flower.RectUI();
-		rect.fillColor = 0xffffff;
+		rect.fillColor = 0x555555;
 		rect.percentWidth = 100;
 		rect.percentHeight = 100;
 		engine.addChild(rect);

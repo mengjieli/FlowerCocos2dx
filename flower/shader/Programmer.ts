@@ -4,7 +4,7 @@ module flower {
         protected _nativeProgrammer:any;
 
         public constructor(vsh:string = "res/shaders/Bitmap.vsh", fsh:string = "res/shaders/Bitmap.fsh") {
-            var shader = Programmer.shader;
+            var shader;// = Programmer.shader;
             if (fsh != "res/shaders/Bitmap.fsh") {
                 shader = new cc.GLProgram(vsh, fsh);
                 shader.retain();
@@ -12,7 +12,8 @@ module flower {
                 shader.updateUniforms();
             }
             if (!shader) {
-                shader = Programmer.shader = new cc.GLProgram(vsh, fsh);
+                //shader = Programmer.shader = new cc.GLProgram(vsh, fsh);
+                shader = new cc.GLProgram(vsh, fsh);
                 shader.retain();
                 shader.link();
                 shader.updateUniforms();
@@ -54,7 +55,7 @@ module flower {
             return this._nativeProgrammer;
         }
 
-        private static shader:any;
+        //private static shader:any;
 
         public static instance:Programmer = new Programmer("res/shaders/Bitmap.vsh", "res/shaders/Source.fsh");
     }

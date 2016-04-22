@@ -19,6 +19,7 @@ module flower {
 		rotation:number;
 		mesureWidth:number;
 		mesureHeight:number;
+		parent:DisplayObjectContainer;
 		once(type:string,listener:Function,thisObject:any);
 		addListener(type:string,listener:Function,thisObject:any);
 		removeListener(type:string,listener:Function,thisObject:any);

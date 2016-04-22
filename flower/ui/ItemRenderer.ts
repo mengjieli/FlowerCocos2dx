@@ -7,6 +7,7 @@ module flower {
 
         public constructor() {
             super();
+            this.absoluteState = true;
         }
 
         public get data():any {
@@ -25,14 +26,25 @@ module flower {
             return this._itemIndex;
         }
 
-        public $setItemIndex(val:number) {
+        $setItemIndex(val:number) {
             this._itemIndex = val;
+        }
+
+        protected setSelected(val:boolean) {
+            this._selected = val;
         }
 
         public get selected():boolean {
             return this._selected;
         }
 
+        public set selected(val:boolean) {
+            val = !!val;
+            if(this._selected == val) {
+                return;
+            }
+            this.setSelected(val);
+        }
     }
 }
 

@@ -151,6 +151,12 @@ module flower {
                 this._selfDispose = false;
                 return;
             }
+            for (var i:number = 0; i < flower.URLLoader.list.length; i++) {
+                if (flower.URLLoader.list[i] == this) {
+                    flower.URLLoader.list.splice(i, 1);
+                    break;
+                }
+            }
             this.dispatchWidth(flower.Event.COMPLETE, this._data);
             this._selfDispose = true;
             this.dispose();

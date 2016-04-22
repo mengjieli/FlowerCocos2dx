@@ -26,6 +26,13 @@ module flower {
                 "Scroller": "flower.Scroller",
                 "DataGroup": "flower.DataGroup",
                 "ItemRenderer": "flower.ItemRenderer",
+                "ToggleButton": "flower.ToggleButton",
+                "ToggleSwitch": "flower.ToggleSwitch",
+                "CheckBox": "flower.CheckBox",
+                "RadioButton": "flower.RadioButton",
+                "RadioButtonGroup": "flower.RadioButtonGroup",
+                "ListBase": "flower.ListBase",
+                "List": "flower.List",
                 "LinearLayoutBase": "flower.LinearLayoutBase",
                 "HorizontalLayout": "flower.HorizontalLayout",
                 "VerticalLayout": "flower.VerticalLayout"
@@ -91,7 +98,16 @@ module flower {
                             }
                             return;
                         }
-                        this.relationUI.push(this.classes.localURL[name]);
+                        var find = false;
+                        for (var f = 0; f < this.relationUI.length; f++) {
+                            if (this.relationUI[f] == this.classes.localURL[name]) {
+                                find = true;
+                                break;
+                            }
+                        }
+                        if (!find) {
+                            this.relationUI.push(this.classes.localURL[name]);
+                        }
                     }
                 }
             }
@@ -286,13 +302,13 @@ module flower {
                     if (item.list.length && item.getElement("f:set") || item.getElement("f:get")) {
                         var setFunction = item.getElement("f:set");
                         var getFunction = item.getElement("f:get");
-                        script.content +=  before + "\tObject.defineProperty(" + className + ".prototype, \"" + childName + "\", {\n";
-                        if(getFunction) {
+                        script.content += before + "\tObject.defineProperty(" + className + ".prototype, \"" + childName + "\", {\n";
+                        if (getFunction) {
                             script.content += "\t\tget: function () {\n"
                             script.content += "\t\t\t" + getFunction.value + "\n";
                             script.content += "\t\t},\n";
                         }
-                        if(setFunction) {
+                        if (setFunction) {
                             script.content += "\t\tset: function (val) {\n";
                             script.content += "\t\t\t" + setFunction.value + "\n";
                             script.content += "\t\t},\n";

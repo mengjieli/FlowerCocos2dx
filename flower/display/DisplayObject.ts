@@ -205,7 +205,7 @@ module flower {
                 matrix.scale(1 / this.scaleX, 1 / this.scaleY);
             this._touchX = matrix.tx;
             this._touchY = matrix.ty;
-            if (this._touchX >= 0 && this._touchY >= 0 && this._touchX < this._width && this._touchY < this._height) {
+            if (this._touchX >= 0 && this._touchY >= 0 && this._touchX < this.width && this._touchY < this.height) {
                 return this;
             }
             matrix.restore();
